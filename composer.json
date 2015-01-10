@@ -2,7 +2,7 @@
     "name": "vectorface/auth",
     "description": "Simple Authentication framework",
     "keywords": [
-        "authentication"
+        "authentication", "auth"
     ],
     "type": "library",
     "license": "MIT",
