@@ -10,7 +10,7 @@ abstract class BaseAuthPlugin implements AuthPluginInterface
     /**
      * Calling Security Class
      *
-     * @var Security
+     * @var Auth
      */
     private $auth;
 

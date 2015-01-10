@@ -83,6 +83,7 @@ class AuthTest extends \PHPUnit_Framework_TestCase
             $this->assertNull($auth->throwAuthException());
             $this->fail('Expected to pass up the AuthException');
         } catch (AuthException $e) {
+            // Expected
         }
         $this->assertNull($auth->throwException()); // Gets caught and causes action failure.
         $this->assertNull($auth->notDefined()); // Method not implemented
@@ -99,6 +100,7 @@ class AuthTest extends \PHPUnit_Framework_TestCase
             $auth->login('u', 'p');
             $this->fail("An invalid result should have triggered an AuthException");
         } catch (AuthException $e) {
+            // Expected
         }
 
         $auth = new Auth();
@@ -112,6 +114,7 @@ class AuthTest extends \PHPUnit_Framework_TestCase
             $auth->verify();
             $this->fail("Expected AuthException to be passed up.");
         } catch (AuthException $e) {
+            // Expected
         }
 
         /* Loading by class name should work. */

@@ -9,4 +9,5 @@ namespace Vectorface\Auth;
  */
 function error_log($string)
 {
+    return is_scalar($string);
 }

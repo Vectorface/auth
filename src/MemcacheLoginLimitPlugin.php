@@ -131,7 +131,7 @@ class MemcacheLoginLimitPlugin extends BaseAuthPlugin
      * Get the memcache cache key.
      *
      * @param string $username The username attempting to log in.
-     * @return [string, string] A pair of cache keys for login and address tracking.
+     * @return string[] A pair of cache keys for login and address tracking.
      */
     protected function getKeys($username)
     {
@@ -200,8 +200,8 @@ class MemcacheLoginLimitPlugin extends BaseAuthPlugin
      * Used internally to set the number of login attempts in memcache.
      *
      * @param string $username The username attempting to log in.
-     * @param diff $num The change to number of login attempts, usually positive or negative 1.
-     * @return [int, int] The number of attempts for the given username and IP address.
+     * @param int $diff The change to number of login attempts, usually positive or negative 1.
+     * @return int[] The number of attempts for the given username and IP address.
      */
     protected function setLoginAttempts($username, $diff)
     {
