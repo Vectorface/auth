@@ -1,9 +1,11 @@
 <?php
 
-namespace Vectorface\Auth\Plugin;
+namespace Vectorface\Auth\Plugin\Limit;
 
 use Memcache;
 use Vectorface\Auth\Auth;
+use Vectorface\Auth\Plugin\BaseAuthPlugin;
+use Vectorface\Auth\Plugin\SharedLoggerTrait;
 
 /**
  * Limit the number of logins allowed per login and IP-address in memcache(d)
@@ -17,8 +19,13 @@ use Vectorface\Auth\Auth;
  *  - There should be a fallback mechanism for this if the memcache server is not available.
  *  - Configurable logging mechanism should be introduced to be able to do more useful alerts.
  */
-class MemcacheLoginLimitPlugin extends BaseAuthPlugin
+class MemcacheLoginLimitPlugin extends BaseAuthPlugin implements LoginLimitPluginInterface
 {
+    /**
+     * Allows use of a logger attached to the auth class, if configured.
+     */
+    use SharedLoggerTrait;
+
     /**
      * Default maximum number of login attempts.
      */
@@ -190,7 +197,7 @@ class MemcacheLoginLimitPlugin extends BaseAuthPlugin
         if ($result === false) {
             $result = ($diff >= 0) ? $diff : 0;
             if (!$this->memcache->set($key, $result, null, $this->timeout)) {
-                error_log('Warning: Setting login attempt count in memcache failed. Login throttling may be broken.');
+                $this->warning('Setting login attempt count in memcache failed. Login throttling may be broken.');
             }
         }
 

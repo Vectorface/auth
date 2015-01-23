@@ -2,10 +2,6 @@
 
 namespace Vectorface\Tests\Auth;
 
-// hack to override the default "error_log" method so we don't print errors to
-// the screen while testing
-require_once __DIR__.'/helpers/error_log.php';
-
 use Vectorface\Auth\Auth;
 use Vectorface\Auth\AuthException;
 use Vectorface\Auth\Plugin\SuccessPlugin;
