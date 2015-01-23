@@ -9,12 +9,8 @@ require_once __DIR__ . '/helpers/error_log.php';
 use Vectorface\Tests\Cache\Helpers\Memcache;
 use Vectorface\Tests\Cache\Helpers\FakeMemcache;
 use Vectorface\Auth\Auth;
-use Vectorface\Auth\AuthException;
 use Vectorface\Auth\Plugin\MemcacheLoginLimitPlugin;
 use Vectorface\Auth\Plugin\SuccessPlugin;
-use Vectorface\Auth\Plugin\NullPlugin;
-use SplFixedArray;
-use Exception;
 
 class MemcacheLoginLimitPluginTest extends \PHPUnit_Framework_TestCase
 {

@@ -3,8 +3,6 @@
 namespace Vectorface\Tests\Auth;
 
 use Vectorface\Auth\Auth;
-use Vectorface\Auth\Plugin\LoggerAwarePlugin;
-
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
