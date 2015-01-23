@@ -10,115 +10,118 @@ use Vectorface\Auth\Auth;
 use Vectorface\Auth\AuthException;
 use Vectorface\Auth\Plugin\SuccessPlugin;
 use Vectorface\Auth\Plugin\NullPlugin;
+use Monolog\Logger;
+use Monolog\Handler\NullHandler;
 use SplFixedArray;
 use Exception;
 
 class AuthTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var Auth
+     */
+    private $auth;
+
+    public function setUp()
+    {
+        $logger = new Logger('auth');
+        $logger->pushHandler(new NullHandler());
+
+        $this->auth = new Auth();
+        $this->auth->setLogger($logger);
+    }
     public function testNothingDoesNothing()
     {
-        $auth = new Auth();
-        $this->assertTrue($auth->addPlugin(new NullPlugin()));
-
-        $this->assertFalse($auth->login('a', 'b'));
-        $this->assertFalse($auth->verify());
-        $this->assertFalse($auth->logout());
+        $this->assertTrue($this->auth->addPlugin(new NullPlugin()));
+        $this->assertFalse($this->auth->login('a', 'b'));
+        $this->assertFalse($this->auth->verify());
+        $this->assertFalse($this->auth->logout());
     }
 
     public function testSuccess()
     {
-        $auth = new Auth();
-        $this->assertTrue($auth->addPlugin(new SuccessPlugin()));
-
-        $this->assertTrue($auth->login('a', 'b'));
-        $this->assertTrue($auth->verify());
-        $this->assertTrue($auth->logout());
+        $this->assertTrue($this->auth->addPlugin(new SuccessPlugin()));
+        $this->assertTrue($this->auth->login('a', 'b'));
+        $this->assertTrue($this->auth->verify());
+        $this->assertTrue($this->auth->logout());
 
     }
 
     public function testLogin()
     {
-        $auth = new Auth();
-        $this->assertTrue($auth->addPlugin(new HardcodedUserPlugin()));
-
-        $this->assertFalse($auth->login('u', 'p'));
-        $this->assertTrue($auth->login('foo', 'bar'));
+        $this->assertTrue($this->auth->addPlugin(new HardcodedUserPlugin()));
+        $this->assertFalse($this->auth->login('u', 'p'));
+        $this->assertTrue($this->auth->login('foo', 'bar'));
     }
 
     public function testForce()
     {
-        $auth = new Auth();
         $testFail = new TestPlugin();
         $testForce = new TestPlugin();
         $testFail->setResult(Auth::RESULT_FAILURE);
         $testForce->setResult(Auth::RESULT_FORCE);
-        $auth->addPlugin($testForce); // Force before fail.
-        $auth->addPlugin($testFail);
-
-        $this->assertTrue($auth->verify());
+        $this->assertTrue($this->auth->addPlugin($testForce)); // Force before fail.
+        $this->assertTrue($this->auth->addPlugin($testFail));
+        $this->assertTrue($this->auth->verify());
     }
 
     public function testArrayAccess()
     {
-        $auth = new Auth();
-
-        $this->assertFalse(isset($auth['foo'])); // offsetExists
-        $this->assertNull($auth['foo']); // offsetGet
-        $auth['foo'] = 'bar'; // offsetSet
-        $this->assertEquals('bar', $auth['foo']); // offsetGet
-        unset($auth['foo']); // offsetUnset
-        $this->assertNull($auth['foo']); // offsetGet
+        $this->assertFalse(isset($this->auth['foo'])); // offsetExists
+        $this->assertNull($this->auth['foo']); // offsetGet
+        $this->auth['foo'] = 'bar'; // offsetSet
+        $this->assertEquals('bar', $this->auth['foo']); // offsetGet
+        unset($this->auth['foo']); // offsetUnset
+        $this->assertNull($this->auth['foo']); // offsetGet
     }
 
     public function testFunctionPassthrough()
     {
-        $auth = new Auth();
         $test = new TestPlugin();
-        $auth->addPlugin($test);
+        $this->auth->addPlugin($test);
 
-        $this->assertTrue($test->getAuthObject() === $auth);
-        $this->assertTrue($auth->returnTrue());
+        $this->assertTrue($test->getAuthObject() === $this->auth);
+        $this->assertTrue($this->auth->returnTrue());
 
         try {
-            $this->assertNull($auth->throwAuthException());
+            $this->assertNull($this->auth->throwAuthException());
             $this->fail('Expected to pass up the AuthException');
         } catch (AuthException $e) {
             // Expected
         }
-        $this->assertNull($auth->throwException()); // Gets caught and causes action failure.
-        $this->assertNull($auth->notDefined()); // Method not implemented
+        $this->assertNull($this->auth->throwException()); // Gets caught and causes action failure.
+        $this->assertNull($this->auth->notDefined()); // Method not implemented
     }
 
     public function testEdgeCases()
     {
-        $auth = new Auth();
         $test = new TestPlugin();
-        $auth->addPlugin($test);
+        $this->auth->addPlugin($test);
         $test->setResult(new SplFixedArray()); // This isn't a valid result.
 
         try {
-            $auth->login('u', 'p');
+            $this->auth->login('u', 'p');
             $this->fail("An invalid result should have triggered an AuthException");
         } catch (AuthException $e) {
             // Expected
         }
 
-        $auth = new Auth();
-        $this->assertTrue($auth->addPlugin('Vectorface\\Auth\\Plugin\\SuccessPlugin'));
-        $auth->addPlugin($test);
+        $this->setUp();
+        $this->assertTrue($this->auth->addPlugin('Vectorface\\Auth\\Plugin\\SuccessPlugin'));
+        $this->auth->addPlugin($test);
         $test->setResult(new Exception("Exception added on purpose by test case.")); // Causes a log entry and failure.
-        $this->assertFalse($auth->verify());
+        $this->assertFalse($this->auth->verify());
 
         $test->setResult(new AuthException());
         try {
-            $auth->verify();
+            $this->auth->verify();
             $this->fail("Expected AuthException to be passed up.");
         } catch (AuthException $e) {
             // Expected
         }
 
         /* Loading by class name should work. */
-        $this->assertTrue($auth->addPlugin('Vectorface\\Auth\\Plugin\\SuccessPlugin'));
-        $this->assertFalse($auth->addPlugin(new SplFixedArray())); // Fails for obvious reasons.
+        $this->assertTrue($this->auth->addPlugin('Vectorface\\Auth\\Plugin\\SuccessPlugin'));
+        $this->assertFalse($this->auth->addPlugin(new SplFixedArray())); // Fails for obvious reasons.
     }
 }

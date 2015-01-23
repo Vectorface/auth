@@ -144,14 +144,7 @@ class Auth implements \ArrayAccess
             } catch (AuthException $e) {
                 throw $e;
             } catch (Exception $e) {
-                error_log(sprintf(
-                    "Fatal %s error in %s plugin: %s (%s@%s)",
-                    $action,
-                    get_class($plugin),
-                    $e->getMessage(),
-                    $e->getFile(),
-                    $e->getLine()
-                ));
+                $this->logException("Fatal %s error in %s plugin", $action, get_class($plugin), $e);
                 return false;
             }
 
@@ -194,18 +187,14 @@ class Auth implements \ArrayAccess
                 } catch (AuthException $e) {
                     throw $e;
                 } catch (Exception $e) {
-                    error_log(sprintf(
-                        "Auth Error: Exception caught calling %s->%s: %s",
-                        get_class($plugin),
-                        $method,
-                        $e->getMessage()
-                    ));
-                    return;
+                    return $this->logException("Exception caught calling %s->%s", get_class($plugin), $method, $e);
                 }
             }
         }
 
-        error_log(__CLASS__ . ": $method not implemented by any loaded plugin");
+        if ($this->logger) {
+            $this->logger->warning(__CLASS__ . ": $method not implemented by any loaded plugin");
+        }
     }
 
     /**
@@ -256,5 +245,26 @@ class Auth implements \ArrayAccess
     public function getLogger()
     {
         return $this->logger; /* Defined as part of the LoggerAwareInterface */
+    }
+
+    /**
+     * Log a message and exception in a semi-consistent form.
+     *
+     * Logs the message, and appends exception message and location.
+     *
+     * @param string $message The exception message in printf style.
+     * @param string ... Any number of string parameters corresponding to %s placeholders in the message string.
+     * @param Exception $exc The exception to log.
+     * @return null
+     */
+    private function logException($message /*, ..., Exception $exc */)
+    {
+        if ($this->logger) {
+            $args = func_get_args();
+            $args[0] .= ": %s (%s@%s)"; /* Append exception info to log string. */
+            $exc = array_pop($args);
+            $args = array_merge($args, [$exc->getMessage(), $exc->getFile(), $exc->getLine()]);
+            $this->logger->warning(call_user_func_array('sprintf', $args));
+        }
     }
 }
