@@ -2,7 +2,7 @@
 
 namespace Vectorface\Auth\Plugin;
 
-use \Memcache;
+use Memcache;
 use Vectorface\Auth\Auth;
 
 /**

@@ -4,7 +4,7 @@ namespace Vectorface\Auth;
 
 use Psr\Log\LoggerAwareTrait;
 use Vectorface\Auth\Plugin\AuthPluginInterface;
-use \Exception;
+use Exception;
 
 /**
  * A class representing a loose Authentication and Authorization framework.
@@ -143,7 +143,7 @@ class Auth implements \ArrayAccess
                 $result = call_user_func_array(array($plugin, $action), $arguments);
             } catch (AuthException $e) {
                 throw $e;
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 error_log(sprintf(
                     "Fatal %s error in %s plugin: %s (%s@%s)",
                     $action,
@@ -193,7 +193,7 @@ class Auth implements \ArrayAccess
                     return call_user_func_array(array($plugin, $method), $args);
                 } catch (AuthException $e) {
                     throw $e;
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     error_log(sprintf(
                         "Auth Error: Exception caught calling %s->%s: %s",
                         get_class($plugin),

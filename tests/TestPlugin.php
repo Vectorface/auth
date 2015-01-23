@@ -2,7 +2,7 @@
 
 namespace Vectorface\Tests\Auth;
 
-use \Exception;
+use Exception;
 use Vectorface\Auth\Auth;
 use Vectorface\Auth\AuthException;
 use Vectorface\Auth\Plugin\BaseAuthPlugin;
