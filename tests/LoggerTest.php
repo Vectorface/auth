@@ -16,19 +16,30 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 
         $test = new TestPlugin();
         $auth = new Auth();
-        $auth->addPlugin(new LoggerAwarePlugin());
         $auth->addPlugin($test);
 
-        $logger = new Logger('auth');
-        $logger->pushHandler(new StreamHandler($logfile, Logger::WARNING));
+        $globalLogger = new Logger('GlobalLogger');
+        $globalLogger->pushHandler(new StreamHandler($logfile, Logger::WARNING));
 
-        $auth->setLogger($logger);
-        $this->assertEquals($logger, $auth->getLogger());
+        $internalLogger = new Logger('InternalLogger');
+        $internalLogger->pushHandler(new StreamHandler($logfile, Logger::WARNING));
 
+        $auth->setLogger($globalLogger);
+        $this->assertEquals($globalLogger, $auth->getLogger());
+
+        /* It can use the global logger... */
         $this->assertFalse((@file_get_contents($logfile)));
-        $test->warning("Logger Test!");
+        $auth->testWarning("Logger Test!");
         $this->assertTrue(strpos(@file_get_contents($logfile), "Logger Test!") !== false);
+        $this->assertTrue(strpos(@file_get_contents($logfile), "GlobalLogger") !== false);
+        @unlink($logfile);
 
+        /* ... Or its own logger! */
+        $this->assertFalse((@file_get_contents($logfile)));
+        $test->setLogger($internalLogger);
+        $auth->testWarning("Logger Test!");
+        $this->assertTrue(strpos(@file_get_contents($logfile), "Logger Test!") !== false);
+        $this->assertTrue(strpos(@file_get_contents($logfile), "InternalLogger") !== false);
         @unlink($logfile);
     }
 }

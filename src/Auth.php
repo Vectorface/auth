@@ -2,6 +2,7 @@
 
 namespace Vectorface\Auth;
 
+use Psr\Log\LoggerAwareTrait;
 use Vectorface\Auth\Plugin\AuthPluginInterface;
 use \Exception;
 
@@ -14,6 +15,11 @@ use \Exception;
  */
 class Auth implements \ArrayAccess
 {
+    /**
+     * Provides setLogger method, and protected logger property.
+     */
+    use LoggerAwareTrait;
+
     /**
      * Name of the method called when authenticating.
      */
@@ -240,5 +246,15 @@ class Auth implements \ArrayAccess
     public function offsetUnset($offset)
     {
         unset($this->shared[$offset]);
+    }
+
+    /**
+     * Get the logger instance set on this object
+     *
+     * @return LoggerInterface The logger for use in this Auth object, or null if not set.
+     */
+    public function getLogger()
+    {
+        return $this->logger; /* Defined as part of the LoggerAwareInterface */
     }
 }

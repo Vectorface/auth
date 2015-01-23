@@ -7,12 +7,14 @@ use Vectorface\Auth\Auth;
 use Vectorface\Auth\AuthException;
 use Vectorface\Auth\Plugin\BaseAuthPlugin;
 use Vectorface\Auth\Plugin\SharedLoggerTrait;
+use Psr\Log\LoggerAwareTrait;
 
 /**
  * An auth plugin for testing.
  */
 class TestPlugin extends BaseAuthPlugin
 {
+    use LoggerAwareTrait;
     use SharedLoggerTrait;
 
     protected $result = Auth::RESULT_NOOP;
@@ -43,4 +45,5 @@ class TestPlugin extends BaseAuthPlugin
     public function returnTrue() { return TRUE; }
     public function throwException() { throw new Exception("Exception thrown on purpose in test case."); }
     public function throwAuthException() { throw new AuthException("AuthException thrown on purpose in test case."); }
+    public function testWarning($message) { $this->warning($message); }
 }

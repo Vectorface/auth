@@ -5,27 +5,39 @@ namespace Vectorface\Auth\Plugin;
 use Psr\Log\LoggerTrait as PsrLoggerTrait;
 
 /**
- * Plugins wishing to perform logging may do so using this trait.
- *
- * It should be expected that plugins exhibit this trait for their own benefit;
- * So they can call $this->warning() etc. on themselves. The info/notice/etc.
- * methods will be exposed by the auth instance itself, but they're fairly
- * pointless in that context.
+ * Plugins wishing to perform their own logging may do so using this trait.
  */
 trait SharedLoggerTrait {
-    use PsrLoggerTrait;
+    /**
+     * Use the PSR logger trait, but make the methods protected so they aren't exposed via the Auth object.
+     */
+    use PsrLoggerTrait {
+        emergency as protected;
+        alert as protected;
+        critical as protected;
+        error as protected;
+        warning as protected;
+        notice as protected;
+        info as protected;
+        debug as protected;
+        log as protected;
+    }
 
     /**
-     * Logs with an arbitrary level.
+     * Logs with an arbitrary level, or don't if no logger has been set.
      *
-     * @param mixed $level
-     * @param string $message
-     * @param array $context
-     * @return null
+     * @param mixed $level The log level. A LogLevel::* constant (usually)
+     * @param string $message The message to log.
+     * @param array $context Further information about the context of the log message.
      */
-    public function log($level, $message, array $context = array()) {
-        $auth = $this->getAuth();
-        if ($logger = $auth[LoggerAwarePlugin::SHARED_KEY_LOGGER]) {
+    protected function log($level, $message, array $context = array()) {
+        if (isset($this->logger)) {
+            $logger = $this->logger;
+        } else {
+            $logger = $this->getAuth()->getLogger();
+        }
+
+        if ($logger) {
             $logger->log($level, $message, $context);
         }
     }
