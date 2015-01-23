@@ -121,13 +121,15 @@ class Auth implements \ArrayAccess
     }
 
     /**
-     * Perform a generalized action: login, logout, or verify: Run said function on each plugin in order verifying
-     * result along the way.
+     * Call an action on a plugin, with particular arguments.
      *
-     * @param string $action The action to be taken. One of login, logout, or verify.
-     * @return bool True if the action was successful, false otherwise.
+     * @param AuthPluginInterface $plugin The plugin on which to run the action.
+     * @param string $action The plugin action, login, logout, or verify.
+     * @param mixed[] $arguments A list of arguments to pass to the action.
+     * @return int The result returned by the Auth plugin.
+     * @throws AuthException
      */
-    private function action($action, $arguments = array())
+    private function callPlugin(AuthPluginInterface $plugin, $action, $arguments)
     {
         /* This is a bit of defensive programming; It is not possible to hit this code. */
         // @codeCoverageIgnoreStart
@@ -136,11 +138,36 @@ class Auth implements \ArrayAccess
         }
         // @codeCoverageIgnoreEnd
 
+        $result = call_user_func_array([$plugin, $action], $arguments);
+
+        /* Expected results are an integer or null; Anything else is incorrect. */
+        if (!(is_int($result) || $result === null)) {
+            throw new AuthException(sprintf(
+                "Unknown %s result in %s plugin: %s",
+                $action,
+                get_class($plugin),
+                print_r($result, true)
+            ));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Perform a generalized action: login, logout, or verify: Run said function on each plugin in order verifying
+     * result along the way.
+     *
+     * @param string $action The action to be taken. One of login, logout, or verify.
+     * @param mixed[] $arguments A list of arguments to pass to the action.
+     * @return bool True if the action was successful, false otherwise.
+     */
+    private function action($action, $arguments = array())
+    {
         $success = false;
 
         foreach ($this->plugins as $plugin) {
             try {
-                $result = call_user_func_array(array($plugin, $action), $arguments);
+                $result = $this->callPlugin($plugin, $action, $arguments);
             } catch (AuthException $e) {
                 throw $e;
             } catch (Exception $e) {
@@ -148,24 +175,13 @@ class Auth implements \ArrayAccess
                 return false;
             }
 
-            /* Expected results are an integer or null; Anything else is incorrect. */
-            if (!(is_int($result) || $result === null)) {
-                throw new AuthException(sprintf(
-                    "Unknown %s result in %s plugin: %s",
-                    $action,
-                    get_class($plugin),
-                    print_r($result, true)
-                ));
-            }
-
             if ($result === self::RESULT_NOOP) {
                 // Do nothing, not defined for plugin.
             } elseif ($result === self::RESULT_SUCCESS /* 0 */) {
                 $success = true;
-            } elseif ($result >= self::RESULT_FORCE /* 1 */) {
-                return true;
-            } else /* if ($result <= self::RESULT_FAILURE) */ {
-                return false;
+            } else {
+                /* Two remaining options are hard fail (<=-1), or hard success (>=1) */
+                return ($result >= self::RESULT_FORCE);
             }
         }
         return $success;
