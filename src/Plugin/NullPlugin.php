@@ -1,6 +1,6 @@
 <?php
 
-namespace Vectorface\Auth;
+namespace Vectorface\Auth\Plugin;
 
 /**
  * A plugin that does nothing.

@@ -3,7 +3,7 @@
 namespace Vectorface\Tests\Auth;
 
 use Vectorface\Auth\Auth;
-use Vectorface\Auth\BaseAuthPlugin;
+use Vectorface\Auth\Plugin\BaseAuthPlugin;
 
 /**
  * An auth plugin that hard-codes username/password foo/bar.

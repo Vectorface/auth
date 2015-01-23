@@ -1,8 +1,9 @@
 <?php
 
-namespace Vectorface\Auth;
+namespace Vectorface\Auth\Plugin;
 
 use \Memcache;
+use Vectorface\Auth\Auth;
 
 /**
  * Limit the number of logins allowed per login and IP-address in memcache(d)

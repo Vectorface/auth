@@ -4,14 +4,17 @@ namespace Vectorface\Tests\Auth;
 
 use \Exception;
 use Vectorface\Auth\Auth;
-use Vectorface\Auth\BaseAuthPlugin;
 use Vectorface\Auth\AuthException;
+use Vectorface\Auth\Plugin\BaseAuthPlugin;
+use Vectorface\Auth\Plugin\SharedLoggerTrait;
 
 /**
  * An auth plugin for testing.
  */
 class TestPlugin extends BaseAuthPlugin
 {
+    use SharedLoggerTrait;
+
     protected $result = Auth::RESULT_NOOP;
 
     private function action()

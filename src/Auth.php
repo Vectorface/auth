@@ -2,6 +2,7 @@
 
 namespace Vectorface\Auth;
 
+use Vectorface\Auth\Plugin\AuthPluginInterface;
 use \Exception;
 
 /**
@@ -72,7 +73,7 @@ class Auth implements \ArrayAccess
     public function addPlugin($plugin)
     {
         if (!($plugin instanceof AuthPluginInterface)) {
-            $interfaceName = 'Vectorface\\Auth\\AuthPluginInterface';
+            $interfaceName = 'Vectorface\\Auth\\Plugin\\AuthPluginInterface';
             if (!is_string($plugin) || !in_array($interfaceName, class_implements($plugin, false))) {
                 return false;
             }

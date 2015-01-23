@@ -8,8 +8,8 @@ require_once __DIR__.'/helpers/error_log.php';
 
 use Vectorface\Auth\Auth;
 use Vectorface\Auth\AuthException;
-use Vectorface\Auth\SuccessPlugin;
-use Vectorface\Auth\NullPlugin;
+use Vectorface\Auth\Plugin\SuccessPlugin;
+use Vectorface\Auth\Plugin\NullPlugin;
 use \SplFixedArray;
 use \Exception;
 
@@ -18,7 +18,7 @@ class AuthTest extends \PHPUnit_Framework_TestCase
     public function testNothingDoesNothing()
     {
         $auth = new Auth();
-        $auth->addPlugin(new NullPlugin());
+        $this->assertTrue($auth->addPlugin(new NullPlugin()));
 
         $this->assertFalse($auth->login('a', 'b'));
         $this->assertFalse($auth->verify());
@@ -28,7 +28,7 @@ class AuthTest extends \PHPUnit_Framework_TestCase
     public function testSuccess()
     {
         $auth = new Auth();
-        $auth->addPlugin(new SuccessPlugin());
+        $this->assertTrue($auth->addPlugin(new SuccessPlugin()));
 
         $this->assertTrue($auth->login('a', 'b'));
         $this->assertTrue($auth->verify());
@@ -39,7 +39,7 @@ class AuthTest extends \PHPUnit_Framework_TestCase
     public function testLogin()
     {
         $auth = new Auth();
-        $auth->addPlugin(new HardcodedUserPlugin());
+        $this->assertTrue($auth->addPlugin(new HardcodedUserPlugin()));
 
         $this->assertFalse($auth->login('u', 'p'));
         $this->assertTrue($auth->login('foo', 'bar'));
@@ -104,7 +104,7 @@ class AuthTest extends \PHPUnit_Framework_TestCase
         }
 
         $auth = new Auth();
-        $this->assertTrue($auth->addPlugin('Vectorface\\Auth\\SuccessPlugin'));
+        $this->assertTrue($auth->addPlugin('Vectorface\\Auth\\Plugin\\SuccessPlugin'));
         $auth->addPlugin($test);
         $test->setResult(new Exception("Exception added on purpose by test case.")); // Causes a log entry and failure.
         $this->assertFalse($auth->verify());
@@ -118,7 +118,7 @@ class AuthTest extends \PHPUnit_Framework_TestCase
         }
 
         /* Loading by class name should work. */
-        $this->assertTrue($auth->addPlugin('Vectorface\\Auth\\SuccessPlugin'));
+        $this->assertTrue($auth->addPlugin('Vectorface\\Auth\\Plugin\\SuccessPlugin'));
         $this->assertFalse($auth->addPlugin(new SplFixedArray())); // Fails for obvious reasons.
     }
 }

@@ -1,6 +1,8 @@
 <?php
 
-namespace Vectorface\Auth;
+namespace Vectorface\Auth\Plugin;
+
+use Vectorface\Auth\Auth;
 
 /**
  * Interface which must be implemented by Auth plugins.

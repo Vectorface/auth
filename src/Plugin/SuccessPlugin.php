@@ -1,6 +1,8 @@
 <?php
 
-namespace Vectorface\Auth;
+namespace Vectorface\Auth\Plugin;
+
+use Vectorface\Auth\Auth;
 
 /**
  * An auth plugin that always succeeds. Useful in development.
