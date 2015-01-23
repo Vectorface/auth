@@ -175,14 +175,12 @@ class Auth implements \ArrayAccess
                 return false;
             }
 
-            if ($result === self::RESULT_NOOP) {
-                // Do nothing, not defined for plugin.
-            } elseif ($result === self::RESULT_SUCCESS /* 0 */) {
+            if ($result === self::RESULT_SUCCESS /* 0 */) {
                 $success = true;
-            } else {
-                /* Two remaining options are hard fail (<=-1), or hard success (>=1) */
+            } elseif ($result !== self::RESULT_NOOP) {
+                /* If not noop or success, possible options are hard fail (<=-1), or hard success (>=1) */
                 return ($result >= self::RESULT_FORCE);
-            }
+            } /* else result is NOOP. Do nothing. Result not defined for plugin. */
         }
         return $success;
     }
