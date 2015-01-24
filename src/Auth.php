@@ -171,7 +171,7 @@ class Auth implements \ArrayAccess
             } catch (AuthException $e) {
                 throw $e;
             } catch (Exception $e) {
-                $this->logException("Fatal %s error in %s plugin", $action, get_class($plugin), $e);
+                $this->logException($e, "Fatal %s error in %s plugin", $action, get_class($plugin));
                 return false;
             }
 
@@ -201,7 +201,7 @@ class Auth implements \ArrayAccess
                 } catch (AuthException $e) {
                     throw $e;
                 } catch (Exception $e) {
-                    return $this->logException("Exception caught calling %s->%s", get_class($plugin), $method, $e);
+                    return $this->logException($e, "Exception caught calling %s->%s", get_class($plugin), $method);
                 }
             }
         }
@@ -266,17 +266,16 @@ class Auth implements \ArrayAccess
      *
      * Logs the message, and appends exception message and location.
      *
+     * @param Exception $exc The exception to log.
      * @param string $message The exception message in printf style.
      * @param string ... Any number of string parameters corresponding to %s placeholders in the message string.
-     * @param Exception $exc The exception to log.
      * @return null
      */
-    private function logException($message /*, ..., Exception $exc */)
+    private function logException(Exception $exc, $message /*, ... */)
     {
         if ($this->logger) {
-            $args = func_get_args();
-            $args[0] .= ": %s (%s@%s)"; /* Append exception info to log string. */
-            $exc = array_pop($args);
+            $args = array_slice(func_get_args(), 2);
+            $message .= ": %s (%s@%s)"; /* Append exception info to log string. */
             $args = array_merge($args, [$exc->getMessage(), $exc->getFile(), $exc->getLine()]);
             $this->logger->warning(call_user_func_array('sprintf', $args));
         }
