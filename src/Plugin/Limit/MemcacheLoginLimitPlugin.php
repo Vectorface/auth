@@ -187,7 +187,6 @@ class MemcacheLoginLimitPlugin extends BaseAuthPlugin implements LoginLimitPlugi
     {
         /* Increment or decrement, as appropriate. */
         if ($diff >= 0) {
-            $diff ?: 1; // falsey values get turned into 1
             $result = $this->memcache->increment($key);
         } else {
             $result = $this->memcache->decrement($key);
