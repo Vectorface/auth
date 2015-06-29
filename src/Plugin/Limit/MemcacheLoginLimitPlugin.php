@@ -132,7 +132,7 @@ class MemcacheLoginLimitPlugin extends BaseAuthPlugin implements LoginLimitPlugi
      */
     public function decrementAttempts()
     {
-        $this->setLoginAttempts($this->username, -1);
+        $this->setLoginAttempts($this->username, false);
     }
 
     /**
@@ -181,20 +181,16 @@ class MemcacheLoginLimitPlugin extends BaseAuthPlugin implements LoginLimitPlugi
      * Adjust the number of attempts in a given memcache key.
      *
      * @param string $key The memcache key to alter.
-     * @param int $diff The amount by which to adjust the key value, typically 1/-1.
+     * @param bool $inc True to increment, false to decrement.
      */
-    protected function setAttemptKey($key, $diff)
+    protected function setAttemptKey($key, $inc)
     {
         /* Increment or decrement, as appropriate. */
-        if ($diff >= 0) {
-            $result = $this->memcache->increment($key);
-        } else {
-            $result = $this->memcache->decrement($key);
-        }
+        $result = $inc ? $this->memcache->increment($key) : $this->memcache->decrement($key);
 
         /* If inc/dec fails, set the value directly. */
         if ($result === false) {
-            $result = ($diff >= 0) ? $diff : 0;
+            $result = $inc ? 1 : 0; /* No value, so either reset to 0, or set to 1. */
             if (!$this->memcache->set($key, $result, null, $this->timeout)) {
                 $this->warning('Setting login attempt count in memcache failed. Login throttling may be broken.');
             }
@@ -207,17 +203,17 @@ class MemcacheLoginLimitPlugin extends BaseAuthPlugin implements LoginLimitPlugi
      * Used internally to set the number of login attempts in memcache.
      *
      * @param string $username The username attempting to log in.
-     * @param int $diff The change to number of login attempts, usually positive or negative 1.
+     * @param bool $inc True to increment the number of attempts, false to decrement.
      * @return int[] The number of attempts for the given username and IP address.
      */
-    protected function setLoginAttempts($username, $diff)
+    protected function setLoginAttempts($username, $inc)
     {
         list($keyLogin, $keyAddr) = $this->getKeys($username);
 
         if (!empty($username)) {
-            $this->attemptsLogin = (int)$this->setAttemptKey($keyLogin, $diff);
+            $this->attemptsLogin = (int)$this->setAttemptKey($keyLogin, $inc);
         }
-        $this->attemptsAddr = (int)$this->setAttemptKey($keyAddr, $diff);
+        $this->attemptsAddr = (int)$this->setAttemptKey($keyAddr, $inc);
 
         return array($this->attemptsLogin, $this->attemptsAddr);
     }
@@ -233,7 +229,7 @@ class MemcacheLoginLimitPlugin extends BaseAuthPlugin implements LoginLimitPlugi
     {
         $this->username = $username; /* Store the last-used username */
 
-        list($login, $addr) = $this->setLoginAttempts($username, 1);
+        list($login, $addr) = $this->setLoginAttempts($username, true);
 
         if ($login > $this->maxAttemptsLogin || $addr > $this->maxAttemptsAddr) {
             return Auth::RESULT_FAILURE;
