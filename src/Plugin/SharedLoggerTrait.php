@@ -31,10 +31,11 @@ trait SharedLoggerTrait {
      * @param array $context Further information about the context of the log message.
      */
     protected function log($level, $message, array $context = array()) {
+        $logger = null;
         if (isset($this->logger)) {
             $logger = $this->logger;
-        } else {
-            $logger = $this->getAuth()->getLogger();
+        } elseif ($auth = $this->getAuth()) {
+            $logger = $auth->getLogger();
         }
 
         if ($logger) {
