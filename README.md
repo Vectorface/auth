@@ -1,4 +1,4 @@
-#Auth
+# Auth
 
 [![Build Status](https://travis-ci.org/Vectorface/auth.svg?branch=master)](https://travis-ci.org/Vectorface/auth)
 [![Code Coverage](https://scrutinizer-ci.com/g/Vectorface/auth/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Vectorface/auth/?branch=master)
