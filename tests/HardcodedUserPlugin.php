@@ -8,7 +8,8 @@ use Vectorface\Auth\Plugin\BaseAuthPlugin;
 /**
  * An auth plugin that hard-codes username/password foo/bar.
  */
-class HardcodedUserPlugin extends BaseAuthPlugin {
+class HardcodedUserPlugin extends BaseAuthPlugin
+{
 	/**
 	 * Auth plugin hook to be fired on login.
 	 *

@@ -5,8 +5,9 @@ namespace Vectorface\Tests\Auth;
 use Vectorface\Auth\Auth;
 use Vectorface\Auth\Plugin\Limit\CookieLoginLimitPlugin;
 use Vectorface\Auth\Plugin\SuccessPlugin;
+use PHPUnit\Framework\TestCase;
 
-abstract class LoginLimitPluginTest extends \PHPUnit_Framework_TestCase
+abstract class LoginLimitPluginTest extends TestCase
 {
     /**
      * Subclass should create its auth object in this method.
