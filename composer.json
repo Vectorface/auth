@@ -11,7 +11,11 @@
     ],
     "autoload": {
         "psr-4": {
-            "Vectorface\\Auth\\": "src",
+            "Vectorface\\Auth\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
             "Vectorface\\Tests\\Auth\\": "tests"
         }
     },
@@ -27,7 +31,7 @@
         "psr/log": "~1.0.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.4",
+        "phpunit/phpunit": "^4.8",
         "squizlabs/php_codesniffer": "~2.0",
         "vectorface/dunit": "~2.0",
         "monolog/monolog": "~1.12.0",

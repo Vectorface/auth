@@ -10,8 +10,9 @@ use Monolog\Logger;
 use Monolog\Handler\NullHandler;
 use SplFixedArray;
 use Exception;
+use PHPUnit\Framework\TestCase;
 
-class AuthTest extends \PHPUnit_Framework_TestCase
+class AuthTest extends TestCase
 {
     /**
      * @var Auth
@@ -63,7 +64,7 @@ class AuthTest extends \PHPUnit_Framework_TestCase
 
     public function testArrayAccess()
     {
-        $this->assertFalse(isset($this->auth['foo'])); // offsetExists
+        $this->assertArrayNotHasKey('foo', $this->auth); // offsetExists
         $this->assertNull($this->auth['foo']); // offsetGet
         $this->auth['foo'] = 'bar'; // offsetSet
         $this->assertEquals('bar', $this->auth['foo']); // offsetGet
@@ -76,7 +77,7 @@ class AuthTest extends \PHPUnit_Framework_TestCase
         $test = new TestPlugin();
         $this->auth->addPlugin($test);
 
-        $this->assertTrue($test->getAuthObject() === $this->auth);
+        $this->assertEquals($this->auth, $test->getAuthObject());
         $this->assertTrue($this->auth->returnTrue());
 
         try {

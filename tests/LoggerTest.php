@@ -5,8 +5,9 @@ namespace Vectorface\Tests\Auth;
 use Vectorface\Auth\Auth;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use PHPUnit\Framework\TestCase;
 
-class LoggerTest extends \PHPUnit_Framework_TestCase
+class LoggerTest extends TestCase
 {
     public function testLogging()
     {
@@ -28,16 +29,16 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
         /* It can use the global logger... */
         $this->assertFalse((@file_get_contents($logfile)));
         $auth->testWarning("Logger Test!");
-        $this->assertTrue(strpos(@file_get_contents($logfile), "Logger Test!") !== false);
-        $this->assertTrue(strpos(@file_get_contents($logfile), "GlobalLogger") !== false);
+        $this->assertContains("Logger Test!", @file_get_contents($logfile));
+        $this->assertContains("GlobalLogger", @file_get_contents($logfile));
         @unlink($logfile);
 
         /* ... Or its own logger! */
         $this->assertFalse((@file_get_contents($logfile)));
         $test->setLogger($internalLogger);
         $auth->testWarning("Logger Test!");
-        $this->assertTrue(strpos(@file_get_contents($logfile), "Logger Test!") !== false);
-        $this->assertTrue(strpos(@file_get_contents($logfile), "InternalLogger") !== false);
+        $this->assertContains("Logger Test!", @file_get_contents($logfile));
+        $this->assertContains("InternalLogger", @file_get_contents($logfile));
         @unlink($logfile);
     }
 }
