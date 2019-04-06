@@ -10,15 +10,15 @@ use Vectorface\Auth\Plugin\BaseAuthPlugin;
  */
 class HardcodedUserPlugin extends BaseAuthPlugin
 {
-	/**
-	 * Auth plugin hook to be fired on login.
-	 *
-	 * @param string $username
-	 * @param string $password
-	 * @return int
-	 */
-	public function login($username, $password)
-	{
-		return ($username === 'foo' && $password === 'bar') ? Auth::RESULT_SUCCESS : Auth::RESULT_FAILURE;
-	}
+    /**
+     * Auth plugin hook to be fired on login.
+     *
+     * @param string $username
+     * @param string $password
+     * @return int
+     */
+    public function login($username, $password)
+    {
+        return ($username === 'foo' && $password === 'bar') ? Auth::RESULT_SUCCESS : Auth::RESULT_FAILURE;
+    }
 }

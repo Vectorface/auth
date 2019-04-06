@@ -12,7 +12,16 @@ class TestLoginLimitPlugin extends CookieLoginLimitPlugin
 {
     public $result = Auth::RESULT_SUCCESS;
 
-    public function login($username, $password) { return $this->result; }
-    public function verify() { return $this->result; }
-    public function logout() { return $this->result; }
+    public function login($username, $password)
+    {
+        return $this->result;
+    }
+    public function verify()
+    {
+        return $this->result;
+    }
+    public function logout()
+    {
+        return $this->result;
+    }
 }
