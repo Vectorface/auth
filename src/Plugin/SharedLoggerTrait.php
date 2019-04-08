@@ -7,7 +7,8 @@ use Psr\Log\LoggerTrait as PsrLoggerTrait;
 /**
  * Plugins wishing to perform their own logging may do so using this trait.
  */
-trait SharedLoggerTrait {
+trait SharedLoggerTrait
+{
     /**
      * Use the PSR logger trait, but make the methods protected so they aren't exposed via the Auth object.
      */
@@ -30,7 +31,8 @@ trait SharedLoggerTrait {
      * @param string $message The message to log.
      * @param array $context Further information about the context of the log message.
      */
-    protected function log($level, $message, array $context = array()) {
+    protected function log($level, $message, array $context = array())
+    {
         $logger = null;
         if (isset($this->logger)) {
             $logger = $this->logger;
@@ -50,4 +52,3 @@ trait SharedLoggerTrait {
      */
     abstract protected function getAuth();
 }
-

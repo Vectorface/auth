@@ -37,13 +37,37 @@ class TestPlugin extends BaseAuthPlugin
         return $this->getAuth();
     }
 
-    public function setResult($result) { $this->result = $result; }
-    public function login($username, $password) { return $this->action(); }
-    public function verify() { return $this->action(); }
-    public function logout() { return $this->action(); }
+    public function setResult($result)
+    {
+        $this->result = $result;
+    }
+    public function login($username, $password)
+    {
+        return $this->action();
+    }
+    public function verify()
+    {
+        return $this->action();
+    }
+    public function logout()
+    {
+        return $this->action();
+    }
 
-    public function returnTrue() { return TRUE; }
-    public function throwException() { throw new Exception("Exception thrown on purpose in test case."); }
-    public function throwAuthException() { throw new AuthException("AuthException thrown on purpose in test case."); }
-    public function testWarning($message) { $this->warning($message); }
+    public function returnTrue()
+    {
+        return true;
+    }
+    public function throwException()
+    {
+        throw new Exception("Exception thrown on purpose in test case.");
+    }
+    public function throwAuthException()
+    {
+        throw new AuthException("AuthException thrown on purpose in test case.");
+    }
+    public function testWarning($message)
+    {
+        $this->warning($message);
+    }
 }

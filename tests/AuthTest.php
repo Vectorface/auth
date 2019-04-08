@@ -19,7 +19,7 @@ class AuthTest extends TestCase
      */
     private $auth;
 
-    public function setUp()
+    protected function setUp()
     {
         $logger = new Logger('auth');
         $logger->pushHandler(new NullHandler());
@@ -41,7 +41,6 @@ class AuthTest extends TestCase
         $this->assertTrue($this->auth->login('a', 'b'));
         $this->assertTrue($this->auth->verify());
         $this->assertTrue($this->auth->logout());
-
     }
 
     public function testLogin()
