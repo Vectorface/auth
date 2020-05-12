@@ -3,6 +3,7 @@
 namespace Vectorface\Auth;
 
 use Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerInterface;
 use Vectorface\Auth\Plugin\AuthPluginInterface;
 use Exception;
 
@@ -60,27 +61,29 @@ class Auth implements \ArrayAccess
      *
      * @var AuthPluginInterface[]
      */
-    private $plugins = array();
+    private $plugins = [];
 
     /**
      * Shared values, accessible using the ArrayAccess interface.
      *
      * @var mixed[]
      */
-    private $shared = array();
+    private $shared = [];
 
     /**
      * Add a plugin to the Auth module.
      *
      * @param string|AuthPluginInterface The name of a plugin class to be registered, or a configured instance of a
-     *                                   security plgin.
+     *                                   security plugin.
      * @return bool True if the plugin was added successfully.
      */
     public function addPlugin($plugin)
     {
         if (!($plugin instanceof AuthPluginInterface)) {
-            $interfaceName = 'Vectorface\\Auth\\Plugin\\AuthPluginInterface';
-            if (!is_string($plugin) || !in_array($interfaceName, class_implements($plugin, false))) {
+            if (!is_string($plugin)) {
+                return false;
+            }
+            if (!in_array(AuthPluginInterface::class, class_implements($plugin, false))) {
                 return false;
             }
             $plugin = new $plugin();
@@ -96,14 +99,17 @@ class Auth implements \ArrayAccess
      * @param string $username A user identifier.
      * @param string $password The user's password.
      * @return bool True if the login was successful, false otherwise.
+     * @throws AuthException
      */
     public function login($username, $password)
     {
-        return $this->action(self::ACTION_LOGIN, array($username, $password));
+        return $this->action(self::ACTION_LOGIN, [$username, $password]);
     }
 
     /**
      * Attempt to log the user out.
+     *
+     * @throws AuthException
      */
     public function logout()
     {
@@ -114,6 +120,7 @@ class Auth implements \ArrayAccess
      * Verify a user's saved data - check if the user is logged in.
      *
      * @return bool True if the user's session was verified successfully.
+     * @throws AuthException
      */
     public function verify()
     {
@@ -160,8 +167,9 @@ class Auth implements \ArrayAccess
      * @param string $action The action to be taken. One of login, logout, or verify.
      * @param mixed[] $arguments A list of arguments to pass to the action.
      * @return bool True if the action was successful, false otherwise.
+     * @throws AuthException
      */
-    private function action($action, $arguments = array())
+    private function action($action, $arguments = [])
     {
         $success = false;
 
@@ -189,15 +197,17 @@ class Auth implements \ArrayAccess
      * Passthrough function call for plugins.
      *
      * @param string $method The name of the method to be called.
-     * @param string $args An array of arguments to be passed to the method.
+     * @param array $args An array of arguments to be passed to the method.
      * @return mixed Returns whatever the passthrough function returns, or null or error or missing function.
+     * @throws AuthException
+     * @noinspection PhpRedundantCatchClauseInspection
      */
-    public function __call($method, $args = array())
+    public function __call($method, $args = [])
     {
         foreach ($this->plugins as $plugin) {
-            if (is_callable(array($plugin, $method))) {
+            if (is_callable([$plugin, $method])) {
                 try {
-                    return call_user_func_array(array($plugin, $method), $args);
+                    return call_user_func_array([$plugin, $method], $args);
                 } catch (AuthException $e) {
                     throw $e;
                 } catch (Exception $e) {
@@ -209,12 +219,14 @@ class Auth implements \ArrayAccess
         if ($this->logger) {
             $this->logger->warning(__CLASS__ . ": $method not implemented by any loaded plugin");
         }
+        return null;
     }
 
     /**
      * ArrayAccess offsetExists
      *
      * @link http://php.net/manual/en/arrayaccess.offsetexists.php
+     * @inheritDoc
      */
     public function offsetExists($offset)
     {
@@ -225,16 +237,18 @@ class Auth implements \ArrayAccess
      * ArrayAccess offsetGet
      *
      * @link http://php.net/manual/en/arrayaccess.offsetget.php
+     * @inheritDoc
      */
     public function offsetGet($offset)
     {
-        return isset($this->shared[$offset]) ? $this->shared[$offset] : null;
+        return $this->shared[$offset] ?? null;
     }
 
     /**
      * ArrayAccess offsetSet
      *
      * @link http://php.net/manual/en/arrayaccess.offsetset.php
+     * @inheritDoc
      */
     public function offsetSet($offset, $value)
     {
@@ -245,6 +259,7 @@ class Auth implements \ArrayAccess
      * ArrayAccess offsetUnset
      *
      * @link http://php.net/manual/en/arrayaccess.offsetunset.php
+     * @inheritDoc
      */
     public function offsetUnset($offset)
     {
@@ -269,7 +284,7 @@ class Auth implements \ArrayAccess
      * @param Exception $exc The exception to log.
      * @param string $message The exception message in printf style.
      * @param string ... Any number of string parameters corresponding to %s placeholders in the message string.
-     * @return null
+     * @noinspection PhpUnusedLocalVariableInspection
      */
     private function logException(Exception $exc, $message /*, ... */)
     {

@@ -3,6 +3,7 @@
 namespace Vectorface\Auth\Plugin;
 
 use Psr\Log\LoggerTrait as PsrLoggerTrait;
+use Vectorface\Auth\Auth;
 
 /**
  * Plugins wishing to perform their own logging may do so using this trait.
@@ -31,7 +32,7 @@ trait SharedLoggerTrait
      * @param string $message The message to log.
      * @param array $context Further information about the context of the log message.
      */
-    protected function log($level, $message, array $context = array())
+    protected function log($level, $message, array $context = [])
     {
         $logger = null;
         if (isset($this->logger)) {

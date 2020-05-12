@@ -6,9 +6,13 @@ use Vectorface\Auth\Auth;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use PHPUnit\Framework\TestCase;
+use Vectorface\Tests\Auth\Helpers\TestPlugin;
 
 class LoggerTest extends TestCase
 {
+    /**
+     * @noinspection PhpUsageOfSilenceOperatorInspection
+     */
     public function testLogging()
     {
         $logfile = sys_get_temp_dir() . '/LoggerTest';
@@ -28,7 +32,7 @@ class LoggerTest extends TestCase
 
         /* It can use the global logger... */
         $this->assertFalse((@file_get_contents($logfile)));
-        $auth->testWarning("Logger Test!");
+        $test->testWarning("Logger Test!");
         $this->assertContains("Logger Test!", @file_get_contents($logfile));
         $this->assertContains("GlobalLogger", @file_get_contents($logfile));
         @unlink($logfile);
@@ -36,7 +40,7 @@ class LoggerTest extends TestCase
         /* ... Or its own logger! */
         $this->assertFalse((@file_get_contents($logfile)));
         $test->setLogger($internalLogger);
-        $auth->testWarning("Logger Test!");
+        $test->testWarning("Logger Test!");
         $this->assertContains("Logger Test!", @file_get_contents($logfile));
         $this->assertContains("InternalLogger", @file_get_contents($logfile));
         @unlink($logfile);

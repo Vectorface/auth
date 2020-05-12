@@ -11,6 +11,8 @@ use Monolog\Handler\NullHandler;
 use SplFixedArray;
 use Exception;
 use PHPUnit\Framework\TestCase;
+use Vectorface\Tests\Auth\Helpers\HardcodedUserPlugin;
+use Vectorface\Tests\Auth\Helpers\TestPlugin;
 
 class AuthTest extends TestCase
 {
@@ -27,6 +29,10 @@ class AuthTest extends TestCase
         $this->auth = new Auth();
         $this->auth->setLogger($logger);
     }
+
+    /**
+     * @throws AuthException
+     */
     public function testNothingDoesNothing()
     {
         $this->assertTrue($this->auth->addPlugin(new NullPlugin()));
@@ -35,6 +41,9 @@ class AuthTest extends TestCase
         $this->assertFalse($this->auth->logout());
     }
 
+    /**
+     * @throws AuthException
+     */
     public function testSuccess()
     {
         $this->assertTrue($this->auth->addPlugin(new SuccessPlugin()));
@@ -43,6 +52,9 @@ class AuthTest extends TestCase
         $this->assertTrue($this->auth->logout());
     }
 
+    /**
+     * @throws AuthException
+     */
     public function testLogin()
     {
         $this->assertTrue($this->auth->addPlugin(new HardcodedUserPlugin()));
@@ -50,6 +62,9 @@ class AuthTest extends TestCase
         $this->assertTrue($this->auth->login('foo', 'bar'));
     }
 
+    /**
+     * @throws AuthException
+     */
     public function testForce()
     {
         $testFail = new TestPlugin();
@@ -71,6 +86,10 @@ class AuthTest extends TestCase
         $this->assertNull($this->auth['foo']); // offsetGet
     }
 
+    /**
+     * @noinspection PhpUndefinedMethodInspection
+     * @noinspection PhpRedundantCatchClauseInspection
+     */
     public function testFunctionPassthrough()
     {
         $test = new TestPlugin();
@@ -89,6 +108,9 @@ class AuthTest extends TestCase
         $this->assertNull($this->auth->notDefined()); // Method not implemented
     }
 
+    /**
+     * @throws AuthException
+     */
     public function testEdgeCases()
     {
         $test = new TestPlugin();

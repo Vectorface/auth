@@ -1,6 +1,6 @@
 <?php
 
-namespace Vectorface\Tests\Auth;
+namespace Vectorface\Tests\Auth\Helpers;
 
 use Vectorface\Auth\Auth;
 use Vectorface\Auth\Plugin\Limit\CookieLoginLimitPlugin;
