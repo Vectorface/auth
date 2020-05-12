@@ -6,6 +6,7 @@ use Vectorface\Auth\Auth;
 use Vectorface\Auth\Plugin\Limit\HybridLoginLimitPlugin;
 use Vectorface\Auth\Plugin\Limit\CookieLoginLimitPlugin;
 use Vectorface\Auth\Plugin\SuccessPlugin;
+use Vectorface\Tests\Auth\Helpers\TestLoginLimitPlugin;
 
 class HybridLoginLimitPluginTest extends LoginLimitPluginTest
 {
@@ -23,11 +24,11 @@ class HybridLoginLimitPluginTest extends LoginLimitPluginTest
         return $auth;
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
     public function testInvalidArg()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
+        /** @noinspection PhpParamsInspection */
         new HybridLoginLimitPlugin([123]);
     }
 

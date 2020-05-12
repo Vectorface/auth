@@ -83,7 +83,7 @@ class CookieLoginLimitPlugin extends BaseAuthPlugin implements LoginLimitPluginI
     public function getLoginAttempts()
     {
         if (!isset($this->attempts)) {
-            $this->attempts = isset($_COOKIE[self::COOKIE_NAME]) ? $_COOKIE[self::COOKIE_NAME] : 0;
+            $this->attempts = $_COOKIE[self::COOKIE_NAME] ?? 0;
         }
         return $this->attempts;
     }
@@ -104,7 +104,7 @@ class CookieLoginLimitPlugin extends BaseAuthPlugin implements LoginLimitPluginI
      * Used internally to set the number of login attempts
      *
      * @param int $diff The change to number of login attempts, usually positive or negative 1.
-     * @return int[] The number of attempts for the given username and IP address.
+     * @return int The number of attempts for the given username and IP address.
      */
     protected function setLoginAttempts($diff)
     {

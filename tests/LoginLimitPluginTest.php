@@ -2,20 +2,27 @@
 
 namespace Vectorface\Tests\Auth;
 
-use Vectorface\Auth\Auth;
-use Vectorface\Auth\Plugin\Limit\CookieLoginLimitPlugin;
-use Vectorface\Auth\Plugin\SuccessPlugin;
 use PHPUnit\Framework\TestCase;
 
 abstract class LoginLimitPluginTest extends TestCase
 {
+    public static function setUpBeforeClass()
+    {
+        // Clear our the cookie cache between tests
+        $_COOKIE = [];
+        parent::setUpBeforeClass();
+    }
+
     /**
      * Subclass should create its auth object in this method.
+     *
+     * @param int $attempts
      */
     abstract protected function getAuth($attempts);
 
     /**
      * @dataProvider loginLimitDataProvider
+     * @param int $attempts
      */
     public function testLoginLimit($attempts)
     {

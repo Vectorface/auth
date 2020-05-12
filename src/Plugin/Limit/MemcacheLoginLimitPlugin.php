@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpComposerExtensionStubsInspection */
 
 namespace Vectorface\Auth\Plugin\Limit;
 
@@ -144,10 +145,10 @@ class MemcacheLoginLimitPlugin extends BaseAuthPlugin implements LoginLimitPlugi
     protected function getKeys($username)
     {
         $addr = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : 'localhost';
-        return array(
+        return [
             sprintf('LoginLimit::login(%s)', $username),
             sprintf('LoginLimit::addr(%s)', $this->addr ? $this->addr : $addr)
-        );
+        ];
     }
 
     /**
@@ -162,7 +163,7 @@ class MemcacheLoginLimitPlugin extends BaseAuthPlugin implements LoginLimitPlugi
      */
     public function getLoginAttempts()
     {
-        return $this->attemptsLogin ?: 0;
+        return $this->attemptsLogin ?? 0;
     }
 
     /**
@@ -182,6 +183,7 @@ class MemcacheLoginLimitPlugin extends BaseAuthPlugin implements LoginLimitPlugi
      *
      * @param string $key The memcache key to alter.
      * @param bool $inc True to increment, false to decrement.
+     * @return false|int
      */
     protected function setAttemptKey($key, $inc)
     {
@@ -215,7 +217,7 @@ class MemcacheLoginLimitPlugin extends BaseAuthPlugin implements LoginLimitPlugi
         }
         $this->attemptsAddr = (int)$this->setAttemptKey($keyAddr, $inc);
 
-        return array($this->attemptsLogin, $this->attemptsAddr);
+        return [$this->attemptsLogin, $this->attemptsAddr];
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace Vectorface\Tests\Auth;
+namespace Vectorface\Tests\Auth\Helpers;
 
 use Exception;
 use Vectorface\Auth\Auth;

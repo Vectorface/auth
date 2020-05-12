@@ -2,7 +2,6 @@
 
 namespace Vectorface\Tests\Auth;
 
-use Vectorface\Tests\Cache\Helpers\Memcache;
 use Vectorface\Tests\Cache\Helpers\FakeMemcache;
 use Vectorface\Auth\Auth;
 use Vectorface\Auth\Plugin\Limit\MemcacheLoginLimitPlugin;
@@ -10,17 +9,22 @@ use Vectorface\Auth\Plugin\SuccessPlugin;
 
 class MemcacheLoginLimitPluginTest extends LoginLimitPluginTest
 {
+    protected $fakeMemcache;
+
     public static function setUpBeforeClass()
     {
         if (!class_exists('Memcache')) {
+            /** @noinspection PhpIgnoredClassAliasDeclaration */
             class_alias('Vectorface\Tests\Cache\Helpers\Memcache', 'Memcache');
         }
+        parent::setUpBeforeClass();
     }
 
     protected function getAuth($attempts)
     {
         $auth = new Auth();
         $fakemc = new FakeMemcache();
+        $this->fakeMemcache = $fakemc;
         $fakemc->flush();
         $mclim = new MemcacheLoginLimitPlugin($fakemc, $attempts);
         $mclim->setRemoteAddr('localhost');
@@ -32,6 +36,10 @@ class MemcacheLoginLimitPluginTest extends LoginLimitPluginTest
         return $auth;
     }
 
+    /**
+     * @throws \Vectorface\Auth\AuthException
+     * @noinspection PhpUndefinedMethodInspection
+     */
     public function testBrokenMemcache()
     {
         $auth = $this->getAuth(5);
@@ -41,8 +49,8 @@ class MemcacheLoginLimitPluginTest extends LoginLimitPluginTest
         }
 
         /* If memcache fails, this is now expected to succeed and emit a warning. */
-        FakeMemcache::$broken = true;
+        $this->fakeMemcache->broken = true;
         $this->assertTrue($auth->login('u', 'p'));
-        FakeMemcache::$broken = false;
+        $this->fakeMemcache->broken = false;
     }
 }
