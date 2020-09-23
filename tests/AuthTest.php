@@ -108,6 +108,14 @@ class AuthTest extends TestCase
         $this->assertNull($this->auth->notDefined()); // Method not implemented
     }
 
+    public function testAddPlugin()
+    {
+        $this->assertTrue($this->auth->addPlugin(new TestPlugin()));
+        $this->assertFalse($this->auth->addPlugin(new SplFixedArray()), 'Not an Auth plugin');
+        $this->assertFalse($this->auth->addPlugin('SplFixedArray'), 'Not an Auth plugin');
+        $this->assertFalse($this->auth->addPlugin(1.2), 'Not an Auth plugin');
+    }
+
     /**
      * @throws AuthException
      */
