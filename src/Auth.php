@@ -2,6 +2,7 @@
 
 namespace Vectorface\Auth;
 
+use ArrayAccess;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
 use Vectorface\Auth\Plugin\AuthPluginInterface;
@@ -14,7 +15,7 @@ use Exception;
  *
  * Plugin classes can share data using the Auth class itself as a shared source of data.
  */
-class Auth implements \ArrayAccess
+class Auth implements ArrayAccess
 {
     /**
      * Provides setLogger method, and protected logger property.
@@ -211,7 +212,8 @@ class Auth implements \ArrayAccess
                 } catch (AuthException $e) {
                     throw $e;
                 } catch (Exception $e) {
-                    return $this->logException($e, "Exception caught calling %s->%s", get_class($plugin), $method);
+                    $this->logException($e, "Exception caught calling %s->%s", get_class($plugin), $method);
+                    return null;
                 }
             }
         }
@@ -228,6 +230,7 @@ class Auth implements \ArrayAccess
      * @link http://php.net/manual/en/arrayaccess.offsetexists.php
      * @inheritDoc
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return isset($this->shared[$offset]);
@@ -239,6 +242,7 @@ class Auth implements \ArrayAccess
      * @link http://php.net/manual/en/arrayaccess.offsetget.php
      * @inheritDoc
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->shared[$offset] ?? null;
@@ -250,6 +254,7 @@ class Auth implements \ArrayAccess
      * @link http://php.net/manual/en/arrayaccess.offsetset.php
      * @inheritDoc
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         $this->shared[$offset] = $value;
@@ -261,6 +266,7 @@ class Auth implements \ArrayAccess
      * @link http://php.net/manual/en/arrayaccess.offsetunset.php
      * @inheritDoc
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         unset($this->shared[$offset]);

@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 abstract class LoginLimitPluginTest extends TestCase
 {
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass() : void
     {
         // Clear our the cookie cache between tests
         $_COOKIE = [];

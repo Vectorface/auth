@@ -16,6 +16,7 @@ class LoggerTest extends TestCase
     public function testLogging()
     {
         $logfile = sys_get_temp_dir() . '/LoggerTest';
+        @unlink($logfile);
 
         $test = new TestPlugin();
         $auth = new Auth();
@@ -31,18 +32,18 @@ class LoggerTest extends TestCase
         $this->assertEquals($globalLogger, $auth->getLogger());
 
         /* It can use the global logger... */
-        $this->assertFalse((@file_get_contents($logfile)));
+        $this->assertFalse(@file_get_contents($logfile));
         $test->testWarning("Logger Test!");
-        $this->assertContains("Logger Test!", @file_get_contents($logfile));
-        $this->assertContains("GlobalLogger", @file_get_contents($logfile));
+        $this->assertStringContainsString("Logger Test!", @file_get_contents($logfile));
+        $this->assertStringContainsString("GlobalLogger", @file_get_contents($logfile));
         @unlink($logfile);
 
         /* ... Or its own logger! */
-        $this->assertFalse((@file_get_contents($logfile)));
+        $this->assertFalse(@file_get_contents($logfile));
         $test->setLogger($internalLogger);
         $test->testWarning("Logger Test!");
-        $this->assertContains("Logger Test!", @file_get_contents($logfile));
-        $this->assertContains("InternalLogger", @file_get_contents($logfile));
+        $this->assertStringContainsString("Logger Test!", @file_get_contents($logfile));
+        $this->assertStringContainsString("InternalLogger", @file_get_contents($logfile));
         @unlink($logfile);
     }
 }

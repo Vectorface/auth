@@ -2,20 +2,21 @@
 
 namespace Vectorface\Tests\Auth;
 
-use Vectorface\Tests\Cache\Helpers\FakeMemcache;
+use Vectorface\Tests\Auth\Helpers\FakeMemcache;
 use Vectorface\Auth\Auth;
 use Vectorface\Auth\Plugin\Limit\MemcacheLoginLimitPlugin;
 use Vectorface\Auth\Plugin\SuccessPlugin;
+use Vectorface\Tests\Auth\Helpers\Memcache;
 
 class MemcacheLoginLimitPluginTest extends LoginLimitPluginTest
 {
     protected $fakeMemcache;
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass() : void
     {
         if (!class_exists('Memcache')) {
             /** @noinspection PhpIgnoredClassAliasDeclaration */
-            class_alias('Vectorface\Tests\Cache\Helpers\Memcache', 'Memcache');
+            class_alias(Memcache::class, 'Memcache');
         }
         parent::setUpBeforeClass();
     }
