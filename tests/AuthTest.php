@@ -21,7 +21,7 @@ class AuthTest extends TestCase
      */
     private $auth;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $logger = new Logger('auth');
         $logger->pushHandler(new NullHandler());

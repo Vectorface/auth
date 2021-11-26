@@ -8,7 +8,7 @@ use Vectorface\Auth\Plugin\SuccessPlugin;
 
 class CookieLoginLimitPluginTest extends LoginLimitPluginTest
 {
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass() : void
     {
         // Define a functions to override headers_sent and setcookie with empty stubs.
         eval('namespace Vectorface\Auth\Plugin\Limit { function headers_sent() {} function setcookie() {} }');
