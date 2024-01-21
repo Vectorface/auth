@@ -33,7 +33,7 @@ trait SharedLoggerTrait
      * @param Stringable|string $message The message to log.
      * @param array $context Further information about the context of the log message.
      */
-    protected function log($level, Stringable|string $message, array $context = [])
+    protected function log($level, Stringable|string $message, array $context = []): void
     {
         $logger = null;
         if (isset($this->logger)) {
