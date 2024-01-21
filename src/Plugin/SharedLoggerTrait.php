@@ -3,6 +3,7 @@
 namespace Vectorface\Auth\Plugin;
 
 use Psr\Log\LoggerTrait as PsrLoggerTrait;
+use Stringable;
 use Vectorface\Auth\Auth;
 
 /**
@@ -29,10 +30,10 @@ trait SharedLoggerTrait
      * Logs with an arbitrary level, or don't if no logger has been set.
      *
      * @param mixed $level The log level. A LogLevel::* constant (usually)
-     * @param string $message The message to log.
+     * @param Stringable|string $message The message to log.
      * @param array $context Further information about the context of the log message.
      */
-    protected function log($level, $message, array $context = [])
+    protected function log($level, Stringable|string $message, array $context = [])
     {
         $logger = null;
         if (isset($this->logger)) {
