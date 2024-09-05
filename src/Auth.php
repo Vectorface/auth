@@ -290,14 +290,16 @@ class Auth implements ArrayAccess
      * @param Exception $exc The exception to log.
      * @param string $message The exception message in printf style.
      * @param string ... Any number of string parameters corresponding to %s placeholders in the message string.
-     * @noinspection PhpUnusedLocalVariableInspection
      */
     private function logException(Exception $exc, $message /*, ... */)
     {
         if ($this->logger) {
-            $args = array_slice(func_get_args(), 2);
             $message .= ": %s (%s@%s)"; /* Append exception info to log string. */
-            $args = array_merge($args, [$exc->getMessage(), $exc->getFile(), $exc->getLine()]);
+            $args = array_merge(
+                [$message],
+                array_slice(func_get_args(), 2),
+                [$exc->getMessage(), $exc->getFile(), $exc->getLine()]
+            );
             $this->logger->warning(call_user_func_array('sprintf', $args));
         }
     }
