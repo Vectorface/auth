@@ -3,21 +3,21 @@
 namespace Vectorface\Tests\Auth\Helpers;
 
 use Exception;
-use Vectorface\Auth\Auth;
-use Vectorface\Auth\AuthException;
-use Vectorface\Auth\Plugin\BaseAuthPlugin;
+use Vectorface\Auth\Authenticator;
+use Vectorface\Auth\Exception;
+use Vectorface\Auth\Plugin\BasePlugin;
 use Vectorface\Auth\Plugin\SharedLoggerTrait;
 use Psr\Log\LoggerAwareTrait;
 
 /**
  * An auth plugin for testing.
  */
-class TestPlugin extends BaseAuthPlugin
+class TestPlugin extends BasePlugin
 {
     use LoggerAwareTrait;
     use SharedLoggerTrait;
 
-    protected $result = Auth::RESULT_NOOP;
+    protected $result = Authenticator::RESULT_NOOP;
 
     private function action()
     {
@@ -30,7 +30,7 @@ class TestPlugin extends BaseAuthPlugin
     /**
      * Pass through the auth object for unit test.
      *
-     * @return Auth
+     * @return Authenticator
      */
     public function getAuthObject()
     {
@@ -64,7 +64,7 @@ class TestPlugin extends BaseAuthPlugin
     }
     public function throwAuthException()
     {
-        throw new AuthException("AuthException thrown on purpose in test case.");
+        throw new Exception("Exception thrown on purpose in test case.");
     }
     public function testWarning($message)
     {

@@ -3,15 +3,15 @@
 namespace Vectorface\Auth\Plugin\Limit;
 
 use InvalidArgumentException;
-use Vectorface\Auth\Auth;
-use Vectorface\Auth\Plugin\BaseAuthPlugin;
+use Vectorface\Auth\Authenticator;
+use Vectorface\Auth\Plugin\BasePlugin;
 
 /**
  * Limit the number of logins allowed per browser. This is to be used alongside the MemcacheLoginLimitPlugin.
  *
  * This is not intended to be a security measure, but more as a guard against a single person locking out an entire office that's behind one NAT.
  */
-class HybridLoginLimitPlugin extends BaseAuthPlugin implements LoginLimitPluginInterface
+class HybridLoginLimitPlugin extends BasePlugin implements LoginLimitPluginInterface
 {
     /**
      * The login limit plugins to "combine".
@@ -83,7 +83,7 @@ class HybridLoginLimitPlugin extends BaseAuthPlugin implements LoginLimitPluginI
     }
 
     /**
-     * Auth plugin hook to be fired on login.
+     * Authenticator plugin hook to be fired on login.
      *
      * @param string $username
      * @param string $password
@@ -91,13 +91,13 @@ class HybridLoginLimitPlugin extends BaseAuthPlugin implements LoginLimitPluginI
      */
     public function login($username, $password)
     {
-        $result = Auth::RESULT_NOOP;
+        $result = Authenticator::RESULT_NOOP;
         foreach ($this->limiters as $limiter) {
             $limiterResult = $limiter->login($username, $password);
 
-            if (in_array($limiterResult, [Auth::RESULT_FAILURE, Auth::RESULT_FORCE])) {
+            if (in_array($limiterResult, [Authenticator::RESULT_FAILURE, Authenticator::RESULT_FORCE])) {
                 return $limiterResult;
-            } elseif ($limiterResult === Auth::RESULT_SUCCESS) {
+            } elseif ($limiterResult === Authenticator::RESULT_SUCCESS) {
                 $result = $limiterResult;
             }
         }

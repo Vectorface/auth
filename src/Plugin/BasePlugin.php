@@ -2,34 +2,34 @@
 
 namespace Vectorface\Auth\Plugin;
 
-use Vectorface\Auth\Auth;
+use Vectorface\Auth\Authenticator;
 
 /**
  * Represents a base auth plugin.
  */
-abstract class BaseAuthPlugin implements AuthPluginInterface
+abstract class BasePlugin implements PluginInterface
 {
     /**
      * Calling Security Class
      *
-     * @var Auth
+     * @var Authenticator
      */
     private $auth;
 
     /**
-     * Store the Auth class into which this plugin will plug. Called by the Auth class on plugin addition.
+     * Store the Authenticator class into which this plugin will plug. Called by the Authenticator class on plugin addition.
      *
-     * @param Auth $auth
+     * @param Authenticator $auth
      */
-    public function setAuth(Auth $auth)
+    public function setAuth(Authenticator $auth)
     {
         $this->auth = $auth;
     }
 
     /**
-     * Get the Auth class instance
+     * Get the Authenticator class instance
      *
-     * @return Auth
+     * @return Authenticator
      */
     protected function getAuth()
     {
@@ -45,7 +45,7 @@ abstract class BaseAuthPlugin implements AuthPluginInterface
      */
     public function login($username, $password)
     {
-        return Auth::RESULT_NOOP;
+        return Authenticator::RESULT_NOOP;
     }
 
     /**
@@ -55,7 +55,7 @@ abstract class BaseAuthPlugin implements AuthPluginInterface
      */
     public function logout()
     {
-        return Auth::RESULT_NOOP;
+        return Authenticator::RESULT_NOOP;
     }
 
     /**
@@ -65,6 +65,6 @@ abstract class BaseAuthPlugin implements AuthPluginInterface
      */
     public function verify()
     {
-        return Auth::RESULT_NOOP;
+        return Authenticator::RESULT_NOOP;
     }
 }

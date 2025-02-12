@@ -8,10 +8,10 @@
 This is a simple authentication framework. It is intended to be used with a variety of interchangeable plugins which can perform authentication, handle sessions, and even authorization. Implementation of these are an exercise left up to others.
 
 ```php
-use Vectorface\Auth\Auth;
+use Vectorface\Auth\Authenticator;
 use Vectorface\Auth\Plugin\SuccessPlugin;
 
-$auth = new Auth();
+$auth = new Authenticator();
 $auth->addPlugin(new SuccessPlugin());
 
 if ($auth->login($_SERVER['PHP_AUTH_USER'] $_SERVER['PHP_AUTH_PW'])) {
@@ -25,10 +25,10 @@ if ($auth->login($_SERVER['PHP_AUTH_USER'] $_SERVER['PHP_AUTH_PW'])) {
 To do anything real with this, you need to implement your own authentication plugin. Maybe sprinkle in some other useful things like Authorization.
 
 ```php
-use Vectorface\Auth\Auth;
-use Vectorface\Auth\Plugin\BaseAuthPlugin;
+use Vectorface\Auth\Authenticator;
+use Vectorface\Auth\Plugin\BasePlugin;
 
-class MyAuthPlugin extends BaseAuthPlugin
+class MyAuthPlugin extends BasePlugin
 {
 	/**
 	 * An array of user data. Pretend this is a database.
@@ -51,20 +51,20 @@ class MyAuthPlugin extends BaseAuthPlugin
 	public function login($username, $password)
 	{
 		if (!isset($this->users[$username])) {
-			return Auth::RESULT_FAILURE;
+			return Authenticator::RESULT_FAILURE;
 		}
 
 		if ($this->users[$username]['pass'] !== $password) {
-			return Auth::RESULT_FAILURE;
+			return Authenticator::RESULT_FAILURE;
 		}
 
 		$this->user = $username;
 
-		return Auth::RESULT_SUCCESS;
+		return Authenticator::RESULT_SUCCESS;
 	}
 
 	/**
-	 * A *new* method. This will be exposed via the Auth object.
+	 * A *new* method. This will be exposed via the Authenticator object.
 	 */
 	public function hasAccess($resource)
 	{
@@ -75,7 +75,7 @@ class MyAuthPlugin extends BaseAuthPlugin
 	}
 }
 
-$auth = new Auth();
+$auth = new Authenticator();
 $auth->addPlugin(new MyAuthPlugin());
 
 if ($auth->login($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'])) {

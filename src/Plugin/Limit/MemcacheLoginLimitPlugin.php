@@ -4,8 +4,8 @@
 namespace Vectorface\Auth\Plugin\Limit;
 
 use Memcache;
-use Vectorface\Auth\Auth;
-use Vectorface\Auth\Plugin\BaseAuthPlugin;
+use Vectorface\Auth\Authenticator;
+use Vectorface\Auth\Plugin\BasePlugin;
 use Vectorface\Auth\Plugin\SharedLoggerTrait;
 
 /**
@@ -20,7 +20,7 @@ use Vectorface\Auth\Plugin\SharedLoggerTrait;
  *  - There should be a fallback mechanism for this if the memcache server is not available.
  *  - Configurable logging mechanism should be introduced to be able to do more useful alerts.
  */
-class MemcacheLoginLimitPlugin extends BaseAuthPlugin implements LoginLimitPluginInterface
+class MemcacheLoginLimitPlugin extends BasePlugin implements LoginLimitPluginInterface
 {
     /**
      * Allows use of a logger attached to the auth class, if configured.
@@ -221,7 +221,7 @@ class MemcacheLoginLimitPlugin extends BaseAuthPlugin implements LoginLimitPlugi
     }
 
     /**
-     * Auth plugin hook to be fired on login.
+     * Authenticator plugin hook to be fired on login.
      *
      * @param string $username
      * @param string $password
@@ -234,9 +234,9 @@ class MemcacheLoginLimitPlugin extends BaseAuthPlugin implements LoginLimitPlugi
         list($login, $addr) = $this->setLoginAttempts($username, true);
 
         if ($login > $this->maxAttemptsLogin || $addr > $this->maxAttemptsAddr) {
-            return Auth::RESULT_FAILURE;
+            return Authenticator::RESULT_FAILURE;
         }
 
-        return Auth::RESULT_NOOP;
+        return Authenticator::RESULT_NOOP;
     }
 }

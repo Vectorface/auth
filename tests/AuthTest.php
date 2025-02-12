@@ -2,8 +2,8 @@
 
 namespace Vectorface\Tests\Auth;
 
-use Vectorface\Auth\Auth;
-use Vectorface\Auth\AuthException;
+use Vectorface\Auth\Authenticator;
+use Vectorface\Auth\Exception;
 use Vectorface\Auth\Plugin\SuccessPlugin;
 use Vectorface\Auth\Plugin\NullPlugin;
 use Monolog\Logger;
@@ -17,7 +17,7 @@ use Vectorface\Tests\Auth\Helpers\TestPlugin;
 class AuthTest extends TestCase
 {
     /**
-     * @var Auth
+     * @var Authenticator
      */
     private $auth;
 
@@ -26,12 +26,12 @@ class AuthTest extends TestCase
         $logger = new Logger('auth');
         $logger->pushHandler(new NullHandler());
 
-        $this->auth = new Auth();
+        $this->auth = new Authenticator();
         $this->auth->setLogger($logger);
     }
 
     /**
-     * @throws AuthException
+     * @throws Exception
      */
     public function testNothingDoesNothing()
     {
@@ -42,7 +42,7 @@ class AuthTest extends TestCase
     }
 
     /**
-     * @throws AuthException
+     * @throws Exception
      */
     public function testSuccess()
     {
@@ -53,7 +53,7 @@ class AuthTest extends TestCase
     }
 
     /**
-     * @throws AuthException
+     * @throws Exception
      */
     public function testLogin()
     {
@@ -63,14 +63,14 @@ class AuthTest extends TestCase
     }
 
     /**
-     * @throws AuthException
+     * @throws Exception
      */
     public function testForce()
     {
         $testFail = new TestPlugin();
         $testForce = new TestPlugin();
-        $testFail->setResult(Auth::RESULT_FAILURE);
-        $testForce->setResult(Auth::RESULT_FORCE);
+        $testFail->setResult(Authenticator::RESULT_FAILURE);
+        $testForce->setResult(Authenticator::RESULT_FORCE);
         $this->assertTrue($this->auth->addPlugin($testForce)); // Force before fail.
         $this->assertTrue($this->auth->addPlugin($testFail));
         $this->assertTrue($this->auth->verify());
@@ -100,8 +100,8 @@ class AuthTest extends TestCase
 
         try {
             $this->assertNull($this->auth->throwAuthException());
-            $this->fail('Expected to pass up the AuthException');
-        } catch (AuthException $e) {
+            $this->fail('Expected to pass up the Exception');
+        } catch (Exception $e) {
             // Expected
         }
         $this->assertNull($this->auth->throwException()); // Gets caught and causes action failure.
@@ -111,13 +111,13 @@ class AuthTest extends TestCase
     public function testAddPlugin()
     {
         $this->assertTrue($this->auth->addPlugin(new TestPlugin()));
-        $this->assertFalse($this->auth->addPlugin(new SplFixedArray()), 'Not an Auth plugin');
-        $this->assertFalse($this->auth->addPlugin('SplFixedArray'), 'Not an Auth plugin');
-        $this->assertFalse($this->auth->addPlugin(1.2), 'Not an Auth plugin');
+        $this->assertFalse($this->auth->addPlugin(new SplFixedArray()), 'Not an Authenticator plugin');
+        $this->assertFalse($this->auth->addPlugin('SplFixedArray'), 'Not an Authenticator plugin');
+        $this->assertFalse($this->auth->addPlugin(1.2), 'Not an Authenticator plugin');
     }
 
     /**
-     * @throws AuthException
+     * @throws Exception
      */
     public function testEdgeCases()
     {
@@ -127,8 +127,8 @@ class AuthTest extends TestCase
 
         try {
             $this->auth->login('u', 'p');
-            $this->fail("An invalid result should have triggered an AuthException");
-        } catch (AuthException $e) {
+            $this->fail("An invalid result should have triggered an Exception");
+        } catch (Exception $e) {
             // Expected
         }
 
@@ -138,11 +138,11 @@ class AuthTest extends TestCase
         $test->setResult(new Exception("Exception added on purpose by test case.")); // Causes a log entry and failure.
         $this->assertFalse($this->auth->verify());
 
-        $test->setResult(new AuthException());
+        $test->setResult(new Exception());
         try {
             $this->auth->verify();
-            $this->fail("Expected AuthException to be passed up.");
-        } catch (AuthException $e) {
+            $this->fail("Expected Exception to be passed up.");
+        } catch (Exception $e) {
             // Expected
         }
 

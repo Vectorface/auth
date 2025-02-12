@@ -4,7 +4,7 @@ namespace Vectorface\Auth\Plugin;
 
 use Psr\Log\LoggerTrait as PsrLoggerTrait;
 use Stringable;
-use Vectorface\Auth\Auth;
+use Vectorface\Auth\Authenticator;
 
 /**
  * Plugins wishing to perform their own logging may do so using this trait.
@@ -12,7 +12,7 @@ use Vectorface\Auth\Auth;
 trait SharedLoggerTrait
 {
     /**
-     * Use the PSR logger trait, but make the methods protected so they aren't exposed via the Auth object.
+     * Use the PSR logger trait, but make the methods protected so they aren't exposed via the Authenticator object.
      */
     use PsrLoggerTrait {
         emergency as protected;
@@ -48,9 +48,9 @@ trait SharedLoggerTrait
     }
 
     /**
-     * Get the Auth class instance
+     * Get the Authenticator class instance
      *
-     * @return Auth
+     * @return Authenticator
      */
     abstract protected function getAuth();
 }

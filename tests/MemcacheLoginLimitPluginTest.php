@@ -3,7 +3,7 @@
 namespace Vectorface\Tests\Auth;
 
 use Vectorface\Tests\Auth\Helpers\FakeMemcache;
-use Vectorface\Auth\Auth;
+use Vectorface\Auth\Authenticator;
 use Vectorface\Auth\Plugin\Limit\MemcacheLoginLimitPlugin;
 use Vectorface\Auth\Plugin\SuccessPlugin;
 use Vectorface\Tests\Auth\Helpers\Memcache;
@@ -23,7 +23,7 @@ class MemcacheLoginLimitPluginTest extends LoginLimitPluginTest
 
     protected function getAuth($attempts)
     {
-        $auth = new Auth();
+        $auth = new Authenticator();
         $fakemc = new FakeMemcache();
         $this->fakeMemcache = $fakemc;
         $fakemc->flush();
@@ -38,7 +38,7 @@ class MemcacheLoginLimitPluginTest extends LoginLimitPluginTest
     }
 
     /**
-     * @throws \Vectorface\Auth\AuthException
+     * @throws \Vectorface\Auth\Exception
      * @noinspection PhpUndefinedMethodInspection
      */
     public function testBrokenMemcache()

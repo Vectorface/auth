@@ -2,15 +2,15 @@
 
 namespace Vectorface\Auth\Plugin;
 
-use Vectorface\Auth\Auth;
+use Vectorface\Auth\Authenticator;
 
 /**
  * An auth plugin that always succeeds. Useful in development.
  */
-class SuccessPlugin extends BaseAuthPlugin
+class SuccessPlugin extends BasePlugin
 {
     /**
-     * Auth plugin hook to be fired on login.
+     * Authenticator plugin hook to be fired on login.
      *
      * @param string $username
      * @param string $password
@@ -18,26 +18,26 @@ class SuccessPlugin extends BaseAuthPlugin
      */
     public function login($username, $password)
     {
-        return Auth::RESULT_SUCCESS;
+        return Authenticator::RESULT_SUCCESS;
     }
 
     /**
-     * Auth plugin hook to be fired on auth verification.
+     * Authenticator plugin hook to be fired on auth verification.
      *
      * @return int
      */
     public function verify()
     {
-        return Auth::RESULT_SUCCESS;
+        return Authenticator::RESULT_SUCCESS;
     }
 
     /**
-     * Auth plugin hook to be fired on logout.
+     * Authenticator plugin hook to be fired on logout.
      *
      * @return int
      */
     public function logout()
     {
-        return Auth::RESULT_SUCCESS;
+        return Authenticator::RESULT_SUCCESS;
     }
 }

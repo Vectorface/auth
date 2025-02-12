@@ -2,7 +2,7 @@
 
 namespace Vectorface\Tests\Auth;
 
-use Vectorface\Auth\Auth;
+use Vectorface\Auth\Authenticator;
 use Vectorface\Auth\Plugin\Limit\CookieLoginLimitPlugin;
 use Vectorface\Auth\Plugin\SuccessPlugin;
 
@@ -17,7 +17,7 @@ class CookieLoginLimitPluginTest extends LoginLimitPluginTest
 
     public function getAuth($attempts)
     {
-        $auth = new Auth();
+        $auth = new Authenticator();
         $lim = new CookieLoginLimitPlugin($attempts);
         $success = new SuccessPlugin();
 

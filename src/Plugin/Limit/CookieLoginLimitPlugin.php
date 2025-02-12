@@ -2,15 +2,15 @@
 
 namespace Vectorface\Auth\Plugin\Limit;
 
-use Vectorface\Auth\Auth;
-use Vectorface\Auth\Plugin\BaseAuthPlugin;
+use Vectorface\Auth\Authenticator;
+use Vectorface\Auth\Plugin\BasePlugin;
 
 /**
  * Limit the number of logins allowed per browser. This is to be used alongside the MemcacheLoginLimitPlugin.
  *
  * This is not intended to be a security measure, but more as a guard against a single person locking out an entire office that's behind one NAT.
  */
-class CookieLoginLimitPlugin extends BaseAuthPlugin implements LoginLimitPluginInterface
+class CookieLoginLimitPlugin extends BasePlugin implements LoginLimitPluginInterface
 {
     /**
      * Name of the cookie.
@@ -117,7 +117,7 @@ class CookieLoginLimitPlugin extends BaseAuthPlugin implements LoginLimitPluginI
     }
 
     /**
-     * Auth plugin hook to be fired on login.
+     * Authenticator plugin hook to be fired on login.
      *
      * @param string $username
      * @param string $password
@@ -128,9 +128,9 @@ class CookieLoginLimitPlugin extends BaseAuthPlugin implements LoginLimitPluginI
         $attempts = $this->setLoginAttempts(1);
 
         if ($attempts > $this->maxAttempts) {
-            return Auth::RESULT_FAILURE;
+            return Authenticator::RESULT_FAILURE;
         }
 
-        return Auth::RESULT_NOOP;
+        return Authenticator::RESULT_NOOP;
     }
 }

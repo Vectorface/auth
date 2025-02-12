@@ -5,6 +5,6 @@ namespace Vectorface\Auth\Plugin;
 /**
  * A plugin that does nothing.
  */
-class NullPlugin extends BaseAuthPlugin
+class NullPlugin extends BasePlugin
 {
 }

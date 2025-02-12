@@ -2,7 +2,7 @@
 
 namespace Vectorface\Tests\Auth\Helpers;
 
-use Vectorface\Auth\Auth;
+use Vectorface\Auth\Authenticator;
 use Vectorface\Auth\Plugin\Limit\CookieLoginLimitPlugin;
 
 /**
@@ -10,7 +10,7 @@ use Vectorface\Auth\Plugin\Limit\CookieLoginLimitPlugin;
  */
 class TestLoginLimitPlugin extends CookieLoginLimitPlugin
 {
-    public $result = Auth::RESULT_SUCCESS;
+    public $result = Authenticator::RESULT_SUCCESS;
 
     public function login($username, $password)
     {

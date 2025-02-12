@@ -2,7 +2,7 @@
 
 namespace Vectorface\Tests\Auth;
 
-use Vectorface\Auth\Auth;
+use Vectorface\Auth\Authenticator;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use PHPUnit\Framework\TestCase;
@@ -19,7 +19,7 @@ class LoggerTest extends TestCase
         @unlink($logfile);
 
         $test = new TestPlugin();
-        $auth = new Auth();
+        $auth = new Authenticator();
         $auth->addPlugin($test);
 
         $globalLogger = new Logger('GlobalLogger');
