@@ -7,7 +7,10 @@
          shortenArraysForExportThreshold="10"
          displayDetailsOnPhpunitDeprecations="true"
          failOnPhpunitDeprecation="true"
+         failOnDeprecation="true"
          failOnRisky="true"
+         failOnNotice="true"
+         failOnSkipped="true"
          failOnWarning="true">
     <testsuites>
         <testsuite name="default">
