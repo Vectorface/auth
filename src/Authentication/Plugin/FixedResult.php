@@ -8,9 +8,15 @@ use Vectorface\Auth\Authentication\PluginInterface;
 class FixedResult implements PluginInterface
 {
     public function __construct(
-        private readonly bool $result,
+        private bool $result = false,
         private readonly bool $callStack = false
     ) {}
+
+    public function result(bool $result): self
+    {
+        $this->result = $result;
+        return $this;
+    }
 
     public function authenticate(callable $next, Credential ...$credentials): bool
     {
