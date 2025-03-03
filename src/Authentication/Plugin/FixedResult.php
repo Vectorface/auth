@@ -5,6 +5,11 @@ namespace Vectorface\Auth\Authentication\Plugin;
 use Vectorface\Auth\Authentication\Credential;
 use Vectorface\Auth\Authentication\PluginInterface;
 
+/**
+ * Produce a fixed authentication result
+ *
+ * This can be used to set a default (true/false) or to force a specific result for testing.
+ */
 class FixedResult implements PluginInterface
 {
     public function __construct(
@@ -12,7 +17,10 @@ class FixedResult implements PluginInterface
         private readonly bool $callStack = false
     ) {}
 
-    public function result(bool $result): self
+    /**
+     * Set the fixed result
+     */
+    public function result(bool $result): static
     {
         $this->result = $result;
         return $this;

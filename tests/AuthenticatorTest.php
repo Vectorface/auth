@@ -25,7 +25,7 @@ class AuthenticatorTest extends TestCase
             /* Allow 3 authentication attempts for a given user identifier */
             new CredentialAttemptLimit(UserIdentifier::type(), new EphermeralStore(), 3, 60),
             /* Authenticate against  */
-            new Plugin\Map(
+            new Plugin\CredentialMap(
                 ['bob' => password_hash('53CUR3', PASSWORD_DEFAULT)],
                 UserIdentifier::type(),
                 Password::type(),

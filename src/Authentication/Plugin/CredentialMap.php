@@ -10,7 +10,7 @@ use Vectorface\Auth\Authentication\PluginInterface;
  *
  * In plain English: This is meant to map a fixed list of usernames and passwords or tokens, mostly for testing
  */
-class Map implements PluginInterface
+class CredentialMap implements PluginInterface
 {
     /**
      * @param array<string, string> $map A map of keys to expected credential values

@@ -5,9 +5,9 @@ namespace Vectorface\Auth\Authorization;
 interface PluginInterface
 {
     /**
-     * Determine if a subject can perform an action
+     * Determine if a subject can access a resource
      *
-     * @return bool true when the subject can perform the action
+     * @return bool true when the subject can access the resource
      */
-    public function can(callable $next, mixed $action, mixed $subject = null): bool;
+    public function can(callable $next, mixed $resource, mixed $subject = null): bool;
 }
