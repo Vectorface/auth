@@ -24,6 +24,6 @@ class Map implements PluginInterface
         } catch (\TypeError) {
             $isset = false; // $resource is not a valid array, so is *not* in the WeakMap!
         }
-        return $isset ? (bool)$this->map[$resource] : $next($subject, $resource);
+        return $isset ? (bool)$this->map[$resource] : $next($resource, $subject);
     }
 }

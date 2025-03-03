@@ -53,12 +53,12 @@ trait AuthorizerTrait
     {
         $callables = [];
         foreach ($this->authorizationPlugins as $index => $plugin) {
-            $callables[$plugin::class . "@{$index}"] = fn($next, ...$args) => $plugin->can($next, ...$args);
+            $callables[$plugin::class . "@{$index}"] = fn($next, $resource, $subject) => $plugin->can($next, $resource, $subject);
         }
 
         return $this->executeStack(
             __FUNCTION__,
-            [$subject, $resource],
+            [$resource, $subject],
             ...$callables,
         ) ?? false;
     }
