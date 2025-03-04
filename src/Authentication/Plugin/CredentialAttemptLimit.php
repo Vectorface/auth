@@ -41,7 +41,7 @@ class CredentialAttemptLimit implements PluginInterface
         return $result;
     }
 
-    public function deauthenticate(callable $next): bool
+    public function deauthenticate(callable $next): ?bool
     {
         return $next();
     }

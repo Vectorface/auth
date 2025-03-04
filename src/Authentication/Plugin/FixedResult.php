@@ -13,7 +13,7 @@ use Vectorface\Auth\Authentication\PluginInterface;
 class FixedResult implements PluginInterface
 {
     public function __construct(
-        private bool $result = false,
+        private ?bool $result = null,
         private readonly bool $callStack = false
     ) {}
 
@@ -26,19 +26,21 @@ class FixedResult implements PluginInterface
         return $this;
     }
 
-    public function authenticate(callable $next, Credential ...$credentials): bool
+    public function authenticate(callable $next, Credential ...$credentials): ?bool
     {
+        $stack = null;
         if ($this->callStack) {
-            $next(...$credentials);
+            $stack = $next(...$credentials);
         }
-        return $this->result;
+        return ($stack === false) ? false : $this->result;
     }
 
-    public function deauthenticate(callable $next): bool
+    public function deauthenticate(callable $next): ?bool
     {
+        $stack = null;
         if ($this->callStack) {
-            $next();
+            $stack = $next();
         }
-        return $this->result;
+        return ($stack === false) ? false : $this->result;
     }
 }

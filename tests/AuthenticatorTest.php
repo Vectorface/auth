@@ -28,7 +28,10 @@ class AuthenticatorTest extends TestCase
             /* Allow 3 authentication attempts for a given user identifier */
             new CredentialAttemptLimit(Credential\UserIdentifier::type(), new EphermeralStore(), 3, 60),
             /* Authenticate against a password */
-            new Plugin\CredentialMap(['bob' => password_hash('53CUR3', PASSWORD_BCRYPT, ['cost' => 4 /* make tests run quickly */])]),
+            new Plugin\CredentialMap([
+                'bob' => password_hash('53CUR3', PASSWORD_BCRYPT, ['cost' => 4 /* make tests run quickly */]),
+                'carol' => 'Pl@1N73x7', /* plaintext password */
+            ]),
             /* Authenticate against a session token */
             token: new Plugin\CredentialMap(['carol' => 'session-token-abc123'], valueCredentialType: Credential\Token::type()),
         );
@@ -52,6 +55,10 @@ class AuthenticatorTest extends TestCase
     public static function attemptProvider(): array
     {
         return [
+            'unknown username' => [
+                [['alice', 'P@55w0rd']],
+                [false],
+            ],
             '0 failures, 1 success' => [
                 [['bob', '53CUR3']],
                 [true],
@@ -68,13 +75,17 @@ class AuthenticatorTest extends TestCase
                 [['bob', 'guess'], ['bob', 'second'], ['bob', 'third'], ['bob', '53CUR3']],
                 [false, false, false, false],
             ],
-            'unknown username' => [
-                [['alice', 'P@55w0rd']],
-                [false],
+            'plaintext password' => [
+                [['carol', 'plaintext'], ['carol', 'Pl@1N73x7']],
+                [false, true],
             ],
             'session token success' => [
                 [['carol', null, 'session-token-abc123']],
                 [true],
+            ],
+            'session token failure' => [
+                [['carol', null, 'session-token-xyz789']],
+                [false],
             ]
         ];
     }
@@ -82,12 +93,24 @@ class AuthenticatorTest extends TestCase
     public function testFixedResults()
     {
         /* Start with a fixed fail */
-        $authenticator = new Authenticator(Plugin\FixedResult::class);
+        $authenticator = new Authenticator(
+            result: new Plugin\FixedResult(false, true),
+            stack: new Plugin\FixedResult(null),
+        );
         $this->assertFalse($authenticator->authenticate());
+        $this->assertFalse($authenticator->deauthenticate());
+
 
         /* Change the fixed result to a success */
-        $authenticator(Plugin\FixedResult::class)->result(true);
+        $authenticator("result")->result(true);
         $this->assertTrue($authenticator->authenticate());
+        $this->assertTrue($authenticator->deauthenticate());
+
+        /* ... But if the rest of the stack fails, this will too */
+        $authenticator("stack")->result(false);
+        $this->assertFalse($authenticator->authenticate());
+        $this->assertFalse($authenticator->deauthenticate());
+
     }
 
     public function testInvalidPlugin()
@@ -101,7 +124,7 @@ class AuthenticatorTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         (new Authenticator())
             ->register(new Plugin\FixedResult(), 'default')
-            ->register(new Plugin\FixedResult(), 'default');
+            ->register(Plugin\FixedResult::class, 'default');
     }
 
     public function testGetPlugin()
