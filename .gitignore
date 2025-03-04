@@ -3,4 +3,5 @@ composer.lock
 composer.phar
 coverage/
 vendor/
+.phpunit.cache
 .phpunit.result.cache
