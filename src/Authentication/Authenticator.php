@@ -23,6 +23,10 @@ class Authenticator
 
     /**
      * Get a registered plugin; Sugar wrapped around the plugin() method.
+     *
+     * @template T
+     * @param class-string<T> $pluginClass
+     * @return ?T
      */
     public function __invoke(string $pluginClass): ?PluginInterface
     {

@@ -86,6 +86,10 @@ trait AuthenticatorTrait
 
     /**
      * Get the plugin instance if registered
+     *
+     * @template T
+     * @param class-string<T> $pluginClass
+     * @return ?T
      */
     public function plugin(string $pluginClass): ?PluginInterface
     {
