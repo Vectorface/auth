@@ -17,7 +17,7 @@ class CredentialAttemptLimit implements PluginInterface
     {
     }
 
-    public function authenticate(callable $next, Credential ...$credentials): bool
+    public function authenticate(callable $next, Credential ...$credentials): ?bool
     {
         /* Find the target credential then increment */
         foreach ($credentials as $credential) {

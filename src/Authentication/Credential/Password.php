@@ -10,6 +10,10 @@ class Password implements Credential, Comparable
 
     public function compare(string $value): bool
     {
-        return $this->value === $value || password_verify($this->value, $value);
+        $info = password_get_info($value);
+        if (isset($info) && !empty($info['algo'])) {
+            return password_verify($this->value, $value);
+        }
+        return $value === $this->value;
     }
 }

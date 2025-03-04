@@ -2,20 +2,23 @@
 
 namespace Vectorface\Tests\Auth;
 
-use Monolog\Handler\TestHandler;
-use Monolog\Logger;
+use Exception;
 use Monolog\Test\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Vectorface\Auth\Authentication\Authenticator;
-use Vectorface\Auth\Authentication\Credential\Password;
-use Vectorface\Auth\Authentication\Credential\UserIdentifier;
+use Vectorface\Auth\Authentication\Credential;
 use Vectorface\Auth\Authentication\Plugin\CredentialAttemptLimit;
 use Vectorface\Auth\Authentication\Plugin\CredentialAttemptLimit\EphermeralStore;
 use Vectorface\Auth\Authentication\Plugin;
 
 class AuthenticatorTest extends TestCase
 {
+    /**
+     * @param array $attempts Represents a series of authentication attempts, each with a user identifier, password, and token
+     * @param array $results Represents the expected results of each authentication attempt
+     * @throws Exception
+     */
     #[Test]
     #[DataProvider('attemptProvider')]
     public function synopsis(array $attempts, array $results)
@@ -23,17 +26,20 @@ class AuthenticatorTest extends TestCase
         /* An authenticator will execute its plugins in order. Here, an attempt limiter and a user/pass checker */
         $authenticator = new Authenticator(
             /* Allow 3 authentication attempts for a given user identifier */
-            new CredentialAttemptLimit(UserIdentifier::type(), new EphermeralStore(), 3, 60),
-            /* Authenticate against  */
-            new Plugin\CredentialMap(
-                ['bob' => password_hash('53CUR3', PASSWORD_DEFAULT)],
-                UserIdentifier::type(),
-                Password::type(),
-            ),
+            new CredentialAttemptLimit(Credential\UserIdentifier::type(), new EphermeralStore(), 3, 60),
+            /* Authenticate against a password */
+            new Plugin\CredentialMap(['bob' => password_hash('53CUR3', PASSWORD_BCRYPT, ['cost' => 4 /* make tests run quickly */])]),
+            /* Authenticate against a session token */
+            token: new Plugin\CredentialMap(['carol' => 'session-token-abc123'], valueCredentialType: Credential\Token::type()),
         );
 
-        foreach ($attempts as $attempt => [$username, $password]) {
-            $result = $authenticator->authenticate(new UserIdentifier($username), new Password($password));
+        foreach ($attempts as $attempt => $credentials) {
+            $credentials = array_filter([
+                new Credential\UserIdentifier($credentials[0]),
+                isset($credentials[1]) ? new Credential\Password($credentials[1]) : null,
+                isset($credentials[2]) ? new Credential\Token($credentials[2]) : null,
+            ]);
+            $result = $authenticator->authenticate(...$credentials);
             $this->assertEquals($results[$attempt], $result);
         }
 
@@ -62,6 +68,14 @@ class AuthenticatorTest extends TestCase
                 [['bob', 'guess'], ['bob', 'second'], ['bob', 'third'], ['bob', '53CUR3']],
                 [false, false, false, false],
             ],
+            'unknown username' => [
+                [['alice', 'P@55w0rd']],
+                [false],
+            ],
+            'session token success' => [
+                [['carol', null, 'session-token-abc123']],
+                [true],
+            ]
         ];
     }
 
@@ -76,15 +90,35 @@ class AuthenticatorTest extends TestCase
         $this->assertTrue($authenticator->authenticate());
     }
 
-    public function testInvalidPluginClass()
+    public function testInvalidPlugin()
     {
-        $this->expectException(\InvalidArgumentException::class, 'Authenticator should only accept PluginInterface classes');
-        new Authenticator('not a valid classname');
+        $this->expectException(\InvalidArgumentException::class);
+        new Authenticator('not a valid plugin class');
     }
 
-    public function testGetPluginFail()
+    public function testPluginCollision()
     {
-        $authenticator = new Authenticator();
+        $this->expectException(\InvalidArgumentException::class);
+        (new Authenticator())
+            ->register(new Plugin\FixedResult(), 'default')
+            ->register(new Plugin\FixedResult(), 'default');
+    }
+
+    public function testGetPlugin()
+    {
+        $passwordPlugin = new Plugin\CredentialMap(['bob' => password_hash('53CUR3', PASSWORD_BCRYPT, ['cost' => 4 /* make tests run quickly */])]);
+        $plaintextPlugin = new Plugin\CredentialMap(['alice' => 'P@55w0rd']);
+
+        $authenticator = new Authenticator(
+            $passwordPlugin,
+            plaintext: $plaintextPlugin,
+        );
+
+        /* Plugins can be referenced by class */
+        $this->assertSame($passwordPlugin, $authenticator(Plugin\CredentialMap::class));
+        /* Plugins can also be referenced by identifier. Useful if two of the same are used. */
+        $this->assertSame($plaintextPlugin, $authenticator('plaintext'));
+        /* Will return nothing if it doesn't have the given plugin class/identifier registered */
         $this->assertNull($authenticator(Plugin\FixedResult::class));
     }
 }

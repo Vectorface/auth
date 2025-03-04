@@ -14,43 +14,41 @@ class CredentialMap implements PluginInterface
 {
     /**
      * @param array<string, string> $map A map of keys to expected credential values
-     * @param string $keyCredentialType
-     * @param string $valueCredentialType
      */
     public function __construct(
         private readonly array $map,
-        private readonly string $keyCredentialType,
-        private readonly string $valueCredentialType,
+        private readonly string $keyCredentialType = 'useridentifier' /* UserIdentifier::type() */,
+        private readonly string $valueCredentialType = 'password' /* Password::type() */,
     ) {}
 
-    public function authenticate(callable $next, Credential ...$credentials): bool
+    public function authenticate(callable $next, Credential ...$credentials): ?bool
     {
         /* 1. Find the credentials */
         $key = null;
-        $value = null;
+        $valueCredential = null;
         foreach ($credentials as $credential) {
             if ($credential::type() === $this->keyCredentialType) {
                 $key = $credential->value();
             } elseif ($credential::type() === $this->valueCredentialType) {
-                $value = $credential;
+                $valueCredential = $credential;
             }
 
-            if (isset($key, $value)) {
+            if (isset($key, $valueCredential)) {
                 break;
             }
         }
 
         /* 2. Make sure we have the required credentials and the value exists in the map */
-        if (!isset($key, $value, $this->map[$key])) {
-            return false;
+        if (!isset($key, $valueCredential) || !isset($this->map[$key])) {
+            return $next(...$credentials); // No information. Continue down the stack.
         }
 
         /*  3. Check if the credentials match the value in the map; non-existent or non-matching means false */
-        if ($value instanceof Credential\Comparable) {
-            if (!$value->compare($this->map[$key])) {
+        if ($valueCredential instanceof Credential\Comparable) {
+            if (!$valueCredential->compare($this->map[$key])) {
                 return false;
             }
-        } elseif ($this->map[$key] !== $value) {
+        } elseif ($this->map[$key] !== $valueCredential->value()) {
             return false;
         }
 
@@ -58,7 +56,7 @@ class CredentialMap implements PluginInterface
         return $next(...$credentials) ?? true;
     }
 
-    public function deauthenticate(callable $next): bool
+    public function deauthenticate(callable $next): ?bool
     {
         return $next() ?? true;
     }
