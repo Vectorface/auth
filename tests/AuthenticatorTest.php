@@ -6,11 +6,13 @@ use Exception;
 use Monolog\Test\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
+use RuntimeException;
 use Vectorface\Auth\Authentication\Authenticator;
 use Vectorface\Auth\Authentication\Credential;
 use Vectorface\Auth\Authentication\Plugin\CredentialAttemptLimit;
 use Vectorface\Auth\Authentication\Plugin\CredentialAttemptLimit\EphermeralStore;
 use Vectorface\Auth\Authentication\Plugin;
+use Vectorface\Tests\Auth\Plugin as TestPlugin;
 
 class AuthenticatorTest extends TestCase
 {
@@ -143,5 +145,12 @@ class AuthenticatorTest extends TestCase
         $this->assertSame($plaintextPlugin, $authenticator('plaintext'));
         /* Will return nothing if it doesn't have the given plugin class/identifier registered */
         $this->assertNull($authenticator(Plugin\FixedResult::class));
+    }
+
+    public function testThrows()
+    {
+        $this->expectException(RuntimeException::class);
+        (new Authenticator(new TestPlugin\ThrowException(RuntimeException::class)))
+            ->authenticate();
     }
 }

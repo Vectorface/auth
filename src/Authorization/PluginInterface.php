@@ -9,5 +9,5 @@ interface PluginInterface
      *
      * @return bool true when the subject can access the resource
      */
-    public function can(callable $next, mixed $resource, mixed $subject = null): bool;
+    public function can(callable $next, mixed $resource, mixed $subject = null): ?bool;
 }

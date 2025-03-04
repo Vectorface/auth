@@ -34,6 +34,7 @@ trait StackExecutorTrait
             $result = $next($next, ...$args);
         } catch (\Exception $e) {
             $logger?->log($this->logLevel ?? LogLevel::WARNING, static::class . ": Exception occurred during {$name}", ['exception' => $e->getMessage()]);
+            throw $e;
         }
         return $result;
     }

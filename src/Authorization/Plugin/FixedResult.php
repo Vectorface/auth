@@ -12,11 +12,9 @@ use Vectorface\Auth\Authorization\PluginInterface;
 class FixedResult implements PluginInterface
 {
     public function __construct(
-        private bool          $result = false,
+        private ?bool         $result = null,
         private readonly bool $callStack = false
-    )
-    {
-    }
+    ) {}
 
     /**
      * Set the fixed result
@@ -27,8 +25,13 @@ class FixedResult implements PluginInterface
         return $this;
     }
 
-    public function can(callable $next, mixed $resource, mixed $subject = null): bool
+    public function can(callable $next, mixed $resource, mixed $subject = null): ?bool
     {
-        return $this->callStack ? ($next($resource, $subject) ?? $this->result) : $this->result;
+        $stack = null;
+        if ($this->callStack) {
+            $stack = $next($resource, $subject);
+        }
+        return ($stack === false) ? false : $this->result;
+        //return $this->callStack ? ($next($resource, $subject) ?? $this->result) : $this->result;
     }
 }

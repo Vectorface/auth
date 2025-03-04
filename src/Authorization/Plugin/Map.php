@@ -17,12 +17,12 @@ class Map implements PluginInterface
     /**
      * Determine if *subject* can *action*
      */
-    public function can(callable $next, mixed $resource, mixed $subject = null): bool
+    public function can(callable $next, mixed $resource, mixed $subject = null): ?bool
     {
         try {
             $isset = isset($this->map[$resource]);
         } catch (\TypeError) {
-            $isset = false; // $resource is not a valid array, so is *not* in the WeakMap!
+            $isset = false; // $resource is not a valid key, so is *not* in the array(strings)/WeakMap(objects)!
         }
         return $isset ? (bool)$this->map[$resource] : $next($resource, $subject);
     }
